@@ -1,0 +1,3 @@
+# www to apex. Belt and braces: the reliable fix is a Cloudflare Redirect Rule
+# on the zone (see GO-LIVE.md), but this covers the Pages-served case.
+https://www.coolturkey.org/* https://coolturkey.org/:splat 301

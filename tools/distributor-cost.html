@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Distributor cost calculator — Rap Ledger — coolturkey</title>
+<meta name="description" content="Enter how many songs you release a year and what you earn. Works out what DistroKid, TuneCore, CD Baby and UnitedMasters actually cost you, including the percentage cuts that don't appear on the pricing page. Runs in your browser.">
+<link rel="canonical" href="https://coolturkey.org/tools/distributor-cost.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%231668d6' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 3.4v8'/%3E%3Cpath d='M18.1 6.1a8.6 8.6 0 1 1-12.2 0'/%3E%3C/g%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="coolturkey">
+<meta property="og:url" content="https://coolturkey.org/tools/distributor-cost.html">
+<meta property="og:title" content="What your distributor actually costs">
+<meta property="og:description" content="Enter what you release and what you earn. Ranks DistroKid, TuneCore, CD Baby and UnitedMasters on real total cost.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What your distributor actually costs">
+<meta name="twitter:description" content="Enter what you release and what you earn. Ranks DistroKid, TuneCore, CD Baby and UnitedMasters on real total cost.">
+<meta name="theme-color" content="#f3f6fb">
+<link rel="stylesheet" href="../styles.css?v=1.0.0">
+<style>
+  .calc-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); }
+  .calc-grid > * { min-width: 0; }
+
+  .hint { font-size: 13px; color: var(--ink-faint); margin: 6px 0 0; }
+
+  /* results, cheapest first */
+  .results { display: grid; gap: 12px; margin-top: 8px; }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 18px;
+    align-items: baseline;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    transition: border-color .25s var(--ease);
+  }
+  .row.best { border-color: var(--accent); border-left-width: 3px; }
+  .row .name { font-weight: 650; color: var(--ink); font-size: 17px; }
+  .row .total {
+    font-size: 22px; font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .row .why { grid-column: 1 / -1; font-size: 14.5px; color: var(--ink-dim); margin-top: 2px; }
+  .row .flag {
+    display: inline-block; font-family: ui-monospace, Menlo, monospace;
+    font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent); margin-left: 8px;
+  }
+  .row .caveat { grid-column: 1 / -1; font-size: 13.5px; color: var(--warn); margin-top: 6px; }
+
+  .verdict {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--bg-sunk);
+    padding: 20px 22px;
+    margin: 28px 0 0;
+  }
+  .verdict p { margin: 0; }
+  .verdict strong { color: var(--ink); }
+</style>
+</head>
+<body data-desk="rap-ledger">
+
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4v8"/><path d="M18.1 6.1a8.6 8.6 0 1 1-12.2 0"/></svg>
+      <span class="platform">coolturkey</span>
+      <span class="desk">Rap Ledger</span>
+    </a>
+    <nav class="site-nav">
+      <a href="../index.html">Home</a>
+      <a href="../cold-takes/index.html">Cold Takes</a>
+      <a href="../rap-ledger.html" aria-current="page">Rap Ledger</a>
+    </nav>
+  </div>
+</header>
+
+<main class="article">
+  <div class="wrap">
+
+    <p class="eyebrow">Free tool</p>
+    <h1>What your distributor actually costs</h1>
+    <p class="byline">
+      Runs entirely in your browser. Nothing is uploaded, nothing is saved. Fees checked against
+      the official pricing pages on 31 July 2026.
+    </p>
+
+    <p class="narrow">
+      Comparing $24.99 against $24.99 tells you nothing, because the sticker price is almost
+      never what decides it. What decides it is whether a percentage cut costs you more than a
+      flat fee, and that depends on how much you earn and where you earn it. Put your own
+      numbers in and the ranking sorts itself out.
+    </p>
+
+    <div class="tool-layout">
+
+      <div>
+        <h2>1. What you put out</h2>
+        <div class="calc-grid">
+          <div class="field">
+            <label for="singles">Singles per year</label>
+            <input type="number" id="singles" min="0" step="1" value="4">
+          </div>
+          <div class="field">
+            <label for="albums">Albums or EPs per year</label>
+            <input type="number" id="albums" min="0" step="1" value="0">
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>2. What you earn</h2>
+        <div class="calc-grid">
+          <div class="field">
+            <label for="streaming">Streaming a year</label>
+            <input type="number" id="streaming" min="0" step="1" value="300">
+            <p class="hint">Spotify, Apple, and the rest. Before anyone's cut.</p>
+          </div>
+          <div class="field">
+            <label for="social">Short-form a year</label>
+            <input type="number" id="social" min="0" step="1" value="150">
+            <p class="hint">TikTok, Reels, YouTube Shorts. This is the field that changes the answer.</p>
+          </div>
+          <div class="field">
+            <label for="years">Over how many years</label>
+            <input type="number" id="years" min="1" max="20" step="1" value="3">
+            <p class="hint">One-time fees look better the longer you hold.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>3. What it costs you</h2>
+        <p style="color:var(--ink-dim);margin-top:-6px">
+          Total cost over the period, cheapest first. Cost means fees paid plus royalties taken.
+        </p>
+        <div class="results" id="results"></div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+
+    </div>
+
+    <h2>How this is worked out</h2>
+
+    <p class="narrow">
+      Nothing clever is happening here, and that's deliberate. For each distributor the tool adds
+      up the fees you would pay over the period, then adds the royalties they would take from
+      what you earn. Subscription services charge every year. CD Baby charges once per release
+      and then keeps a percentage forever, which is why the number of years matters so much to
+      how it ranks.
+    </p>
+
+    <p class="narrow">
+      A few things it does not model, because pretending to be precise about them would be worse
+      than leaving them out. It assumes you stay on the entry plan of each subscription service,
+      since that covers one artist and unlimited uploads and is what most people are actually
+      choosing between. It ignores add-ons, publishing administration and sync, which are
+      separate products with separate cuts. And it ignores the single biggest real-world cost,
+      which is letting a subscription lapse and having your catalogue taken down.
+    </p>
+
+    <div class="callout narrow">
+      <p>
+        <strong>The number that isn't here.</strong> CD Baby publishes its 9% distribution
+        commission plainly, but does not state its cut on social and UGC monetization on the
+        pricing page, and it is reported elsewhere as considerably higher than 9%. Rather than
+        invent a figure, this tool applies 9% to CD Baby's social earnings and flags the result
+        as a best case. If your money is mostly short-form, treat CD Baby's number here as a
+        floor rather than an estimate.
+      </p>
+    </div>
+
+    <h2>Sources</h2>
+    <ul style="font-size:15px;color:var(--ink-dim)" class="narrow">
+      <li><a href="https://distrokid.com/pricing/">DistroKid pricing</a>, official. Musician $24.99/yr, unlimited uploads, one artist.</li>
+      <li><a href="https://www.tunecore.com/pricing">TuneCore pricing</a>, official. Rising Artist $24.99/yr, and the 20% social fee stated on the page.</li>
+      <li><a href="https://cdbaby.com/cd-baby-cost/">CD Baby cost</a>, official. $9.99 single, $14.99 album, one-time, 9% of digital distribution revenue.</li>
+      <li><a href="https://support.unitedmasters.com/hc/en-us/articles/25795093148563-What-is-the-UnitedMasters-SELECT-membership-plan-and-how-much-does-it-cost">UnitedMasters SELECT</a>, official. $59.99/yr at 0%; the free tier keeps 10%.</li>
+    </ul>
+
+    <p class="narrow" style="color:var(--ink-faint);font-size:15px">
+      Pricing changes and tiers get renamed. Confirm on the distributor's own page before you
+      sign up, and if you find something out of date here,
+      <a href="../rap-ledger.html">tell us and the page gets corrected and dated</a>.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div>
+      <strong style="color:var(--ink)">coolturkey</strong><br>
+      Music, on your own terms.
+    </div>
+    <div>
+      <a href="../cold-takes/index.html">Cold Takes</a> ·
+      <a href="../rap-ledger.html">Rap Ledger</a> ·
+      <a href="split-sheet.html">Split sheet tool</a>
+    </div>
+    <div>
+      Not legal or financial advice.
+    </div>
+  </div>
+  <div class="footer-mark">coolturkey</div>
+</footer>
+
+<script src="../site.js?v=1.0.0" defer></script>
+
+<script>
+(function () {
+  'use strict';
+
+  /* All figures verified against official pricing pages, 31 July 2026.
+     Anything not published by the distributor itself is marked unconfirmed
+     rather than guessed at. */
+  var PLANS = [
+    {
+      name: 'DistroKid',
+      plan: 'Musician, $24.99/yr',
+      annual: 24.99,
+      perSingle: 0, perAlbum: 0,
+      streamCut: 0, socialCut: 0,
+      expires: true,
+      note: 'Flat fee, no percentage on streaming or social.'
+    },
+    {
+      name: 'TuneCore',
+      plan: 'Rising Artist, $24.99/yr',
+      annual: 24.99,
+      perSingle: 0, perAlbum: 0,
+      streamCut: 0, socialCut: 0.20,
+      expires: true,
+      note: 'Same annual fee as DistroKid, but takes 20% of short-form.'
+    },
+    {
+      name: 'CD Baby',
+      plan: '$9.99 single / $14.99 album, one-time',
+      annual: 0,
+      perSingle: 9.99, perAlbum: 14.99,
+      streamCut: 0.09, socialCut: 0.09,
+      expires: false,
+      unconfirmedSocial: true,
+      note: 'Pay once per release, never renew. The trade is 9% forever.'
+    },
+    {
+      name: 'UnitedMasters free',
+      plan: 'Free tier',
+      annual: 0,
+      perSingle: 0, perAlbum: 0,
+      streamCut: 0.10, socialCut: 0.10,
+      expires: false,
+      note: 'Nothing up front. 10% of everything, indefinitely.'
+    },
+    {
+      name: 'UnitedMasters SELECT',
+      plan: 'SELECT, $59.99/yr',
+      annual: 59.99,
+      perSingle: 0, perAlbum: 0,
+      streamCut: 0, socialCut: 0,
+      expires: true,
+      note: 'Highest fee of the five, but no percentage anywhere.'
+    }
+  ];
+
+  function num(id) {
+    var v = parseFloat(document.getElementById(id).value);
+    return isFinite(v) && v > 0 ? v : 0;
+  }
+
+  function money(n) {
+    return '$' + n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+
+  function render() {
+    var singles = num('singles'), albums = num('albums');
+    var streaming = num('streaming'), social = num('social');
+    var years = Math.max(1, Math.round(num('years')) || 1);
+
+    var rows = PLANS.map(function (p) {
+      var fees = p.annual * years
+               + p.perSingle * singles * years
+               + p.perAlbum  * albums  * years;
+      var cuts = (streaming * p.streamCut + social * p.socialCut) * years;
+      return {
+        p: p,
+        fees: fees,
+        cuts: cuts,
+        total: fees + cuts
+      };
+    }).sort(function (a, b) { return a.total - b.total; });
+
+    var out = document.getElementById('results');
+    out.innerHTML = '';
+
+    rows.forEach(function (r, i) {
+      var el = document.createElement('div');
+      el.className = 'row' + (i === 0 ? ' best' : '');
+
+      var breakdown = money(r.fees) + ' in fees';
+      if (r.cuts > 0) breakdown += ' plus ' + money(r.cuts) + ' taken from royalties';
+      else breakdown += ', nothing taken from royalties';
+
+      el.innerHTML =
+        '<div class="name">' + r.p.name +
+          (i === 0 ? '<span class="flag">cheapest</span>' : '') +
+        '</div>' +
+        '<div class="total">' + money(r.total) + '</div>' +
+        '<div class="why">' + r.p.plan + '. ' + breakdown + ' over ' +
+          years + (years === 1 ? ' year.' : ' years.') + '</div>' +
+        (r.p.unconfirmedSocial && social > 0
+          ? '<div class="caveat">Best case only. CD Baby does not publish its social/UGC cut, and it is reported as higher than 9%.</div>'
+          : '');
+
+      out.appendChild(el);
+    });
+
+    /* The verdict explains WHY, because a ranking on its own teaches nobody
+       anything and the reasoning is the actual product here. */
+    var best = rows[0], second = rows[1];
+    var gap = second.total - best.total;
+    var v = document.getElementById('verdict');
+    var msg;
+
+    if (streaming + social === 0) {
+      msg = '<strong>Put your earnings in.</strong> With nothing earned, this is just a list of ' +
+            'fees, and the cheapest fee is rarely the cheapest distributor. The percentages are ' +
+            'what decide it.';
+    } else if (gap < 5) {
+      msg = '<strong>It is basically a tie.</strong> ' + best.p.name + ' and ' + second.p.name +
+            ' come out within ' + money(gap) + ' of each other over ' + years +
+            (years === 1 ? ' year' : ' years') + ', which is close enough that it should not ' +
+            'be the deciding factor. Choose on whether your music stays up when you stop paying.';
+    } else {
+      msg = '<strong>' + best.p.name + ', by ' + money(gap) + ' over ' + years +
+            (years === 1 ? ' year' : ' years') + '.</strong> ' + best.p.note;
+      if (social > 0 && social >= streaming * 0.5) {
+        msg += ' Your short-form earnings are doing a lot of work in this answer, which is ' +
+               'exactly where the percentage cuts bite hardest.';
+      }
+      if (best.p.expires) {
+        msg += ' One thing the total does not capture: this is a subscription, so if it lapses ' +
+               'your catalogue comes down.';
+      } else {
+        msg += ' It also does not expire, so nothing comes down if you stop paying attention.';
+      }
+    }
+    v.innerHTML = '<p>' + msg + '</p>';
+  }
+
+  document.addEventListener('input', render);
+  document.addEventListener('change', render);
+  render();
+})();
+</script>
+
+</body>
+</html>

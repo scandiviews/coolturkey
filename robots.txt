@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /release-system.html
+
+Sitemap: https://coolturkey.org/sitemap.xml

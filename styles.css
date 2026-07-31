@@ -1,0 +1,826 @@
+/* coolturkey — shared styles
+
+   Direction: "blue hour". An ink-navy room with two lights in it, one cold and
+   one warm, and one of them follows your cursor. The site earns its character
+   through light, type and motion rather than through decoration, because Rap
+   Ledger has to stay credible about money.
+
+   Three rules hold this together, all of them reactions to real feedback:
+
+   1. Never pure black. Black plus neon glow is the house style of every
+      AI-generated dark page, and it reads as exactly that. Ink navy has a
+      temperature.
+   2. Glow sparingly, and round corners barely. Both of those, overdone, are
+      the other half of the same look. Print is squarer and flatter.
+   3. One accent for the whole platform. Desks differ by the temperature of
+      the room behind them, never by the accent colour. */
+
+/* ============================================================
+   LIGHT is the default. Every AI-generated site is dark, so paper is now
+   the more distinctive choice, and the cursor light reads better on it:
+   instead of a glow it becomes a wash of colour moving across the page.
+   The dark theme is preserved below under [data-theme="dark"].
+   ============================================================ */
+
+:root {
+  /* Paper, very slightly cool so the blue wash has something to sit in.
+     Never pure white, for the same reason the dark theme is never pure black:
+     a flat #fff has no temperature and nothing for the light to tint. */
+  --bg:         #f3f6fb;
+  --bg-raised:  #ffffff;
+  --bg-sunk:    #eaeff7;
+  --bg-glass:   rgba(243, 246, 251, 0.82);
+
+  /* lines */
+  --line:       #d3dce9;
+  --line-soft:  #e3e9f3;
+
+  /* ink is the dark theme's background: deep navy, not black */
+  --ink:        #0e1728;
+  --ink-dim:    #42506a;
+  --ink-faint:  #78849a;
+
+  /* THE signature colour, one accent for the whole platform. Two values on
+     purpose: --accent is darkened for legibility as link and label text on
+     paper, while --accent-glow stays the bright brand blue and is only ever
+     used for atmosphere, where contrast rules don't apply. */
+  --accent:      #1668d6;
+  --accent-dim:  #a8c9ef;
+  --accent-glow: 90, 169, 255;
+
+  /* the room's second light, warm, never used on text */
+  --ambient:     255, 168, 120;
+
+  /* how strongly the room's lights tint the paper */
+  --wash:        0.30;
+  --wash-warm:   0.16;
+
+  /* fixed semantic colours: these must NOT follow the accent, because they
+     mean something (good / warning / bad) on every page. Darkened here so
+     they stay legible on paper. */
+  --good:  #17855a;
+  --bad:   #c93b31;
+  --warn:  #a86a06;
+
+  /* grain: dark specks on paper */
+  --grain-opacity: 0.05;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='1'/%3E%3C/filter%3E%3Crect width='64' height='64' filter='url(%23n)'/%3E%3Crect width='64' height='64' fill='%23000' opacity='.55' style='mix-blend-mode:color-burn'/%3E%3C/svg%3E");
+
+  /* how hard the vignette closes in. Barely, on paper. */
+  --vignette: 0.05;
+
+  /* Small radius on purpose. Everything-rounded-to-14px is the other half of
+     the AI house style. Print is squarer than that. */
+  --radius:  5px;
+  --wrap:    1140px;
+  --measure: 68ch;
+
+  --ease: cubic-bezier(.22, .68, .3, 1);
+}
+
+/* ---------- the dark theme, kept ---------- */
+
+:root[data-theme="dark"] {
+  --bg:         #0b111c;
+  --bg-raised:  #131b2a;
+  --bg-sunk:    #080d16;
+  --bg-glass:   rgba(14, 20, 32, 0.78);
+
+  --line:       #23304a;
+  --line-soft:  #18202f;
+
+  --ink:        #eef2f8;
+  --ink-dim:    #9fadc2;
+  --ink-faint:  #64738c;
+
+  --accent:      #5aa9ff;
+  --accent-dim:  #2b5c96;
+  --accent-glow: 90, 169, 255;
+
+  --ambient:     255, 150, 90;
+
+  --wash:        0.10;
+  --wash-warm:   0.09;
+
+  --good:  #5ad19a;
+  --bad:   #ff6b61;
+  --warn:  #ffc247;
+
+  --grain-opacity: 0.038;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='64' height='64' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --vignette: 0.55;
+}
+
+/* Desks differ by the temperature of the room, not by the accent. The blue
+   stays constant everywhere, which is the thing people will remember. */
+body[data-desk="cold-takes"] { --ambient: 150, 170, 255; }
+body[data-desk="rap-ledger"] { --ambient: 255, 168, 120; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ---------- the room ----------
+   Two fixed light sources bloom behind everything: a warm one up top (the
+   lamp) and a cold one low (the screen). This is what stops a dark site
+   reading as a flat black rectangle. */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    /* The light that follows you. JS writes --px/--py; the defaults park it
+       top-left so the page still looks deliberate with no script running.
+       On paper this reads as a wash of colour rather than a glow, which is
+       the better version of the effect. */
+    radial-gradient(60ch 50ch at var(--px, 16%) var(--py, 8%),
+      rgba(var(--accent-glow), var(--wash)), transparent 68%),
+    radial-gradient(78ch 62ch at 6% -8%,
+      rgba(var(--accent-glow), calc(var(--wash) * 0.75)), transparent 62%),
+    radial-gradient(70ch 58ch at 96% 2%,
+      rgba(var(--ambient), var(--wash-warm)), transparent 60%),
+    radial-gradient(96ch 74ch at 50% 106%,
+      rgba(var(--ambient), calc(var(--wash-warm) * 0.7)), transparent 62%);
+}
+
+/* Vignette. On the dark theme it closes the room in; on paper it barely does
+   anything, because a dark edge on a light page just looks grubby. One static
+   gradient either way, no filter. */
+html::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(130ch 100ch at 50% 42%, transparent 55%, rgba(6, 14, 30, var(--vignette)));
+}
+
+/* Film grain. Inline SVG so the site stays a single self-contained folder —
+   no image requests, still drag-and-drop deployable.
+
+   Kept deliberately cheap: one octave on a small tile, and no mix-blend-mode.
+   feTurbulence is a procedural filter the compositor has to rasterise, and on
+   a fixed full-viewport layer that cost is paid over and over. Three octaves
+   plus an overlay blend was enough to stall a renderer on a long page. This
+   version is visually near-identical and costs a fraction. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: var(--grain);
+}
+
+h1, h2, h3, .serif {
+  font-family: ui-serif, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.022em;
+}
+
+a { color: var(--accent); text-decoration: none; transition: color .18s var(--ease); }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 26px; position: relative; }
+.narrow { max-width: var(--measure); }
+
+::selection { background: rgba(var(--accent-glow), .30); color: var(--ink); }
+
+/* ---------- reveal on scroll ----------
+   JS adds .is-in when the element enters the viewport. Without JS everything
+   is visible by default — the animation is additive, never load-bearing. */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .7s var(--ease), transform .7s var(--ease);
+  will-change: opacity, transform;
+}
+.reveal.is-in { opacity: 1; transform: none; }
+
+/* ---------- reading progress ---------- */
+
+.progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0;
+  z-index: 60;
+  background: linear-gradient(90deg, transparent, rgb(var(--accent-glow)));
+  transition: width .1s linear;
+}
+
+/* ---------- header ---------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background .35s var(--ease), border-color .35s var(--ease), backdrop-filter .35s var(--ease);
+}
+.site-header.scrolled {
+  background: var(--bg-glass);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom-color: var(--line-soft);
+}
+
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 70px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  font-family: ui-serif, "Iowan Old Style", Georgia, serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.brand:hover { text-decoration: none; }
+.brand .mark {
+  color: var(--accent);
+  font-size: 15px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* The mark: the universal power/standby symbol. Going cold turkey is quitting,
+   and this is the glyph everyone on earth already reads as "off". It's the
+   whole brand in one shape, and it costs 2 paths. */
+.logo {
+  width: 21px;
+  height: 21px;
+  flex: none;
+  align-self: center;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  filter: none;
+  transition: transform .5s var(--ease), filter .35s var(--ease);
+}
+.brand:hover .logo {
+  transform: rotate(180deg);
+  filter: drop-shadow(0 0 5px rgba(var(--accent-glow), .45));
+}
+
+/* the platform wordmark, with the desk named separately so a section never
+   looks like the whole site */
+.brand .platform {
+  font-size: 23px;
+  letter-spacing: -0.04em;
+  background: linear-gradient(100deg, var(--ink) 34%, var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 220% 100%;
+  background-position: 0% 0;
+  transition: background-position .55s var(--ease);
+}
+.brand:hover .platform { background-position: 100% 0; }
+
+.brand .desk {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-left: 1px solid var(--line);
+  padding-left: 12px;
+  transition: color .25s var(--ease);
+}
+.brand:hover .desk { color: var(--accent); }
+
+/* theme toggle: injected by site.js, so it never appears without the script
+   that makes it work */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-dim);
+  width: 32px; height: 32px;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color .2s var(--ease), color .2s var(--ease);
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; }
+.theme-toggle .moon { display: none; }
+:root[data-theme="dark"] .theme-toggle .moon { display: block; }
+:root[data-theme="dark"] .theme-toggle .sun  { display: none; }
+
+.site-nav { display: flex; gap: 26px; font-size: 15px; align-items: center; }
+.site-nav a { color: var(--ink-dim); position: relative; padding: 4px 0; }
+.site-nav a::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 1px; width: 0;
+  background: var(--accent);
+  transition: width .3s var(--ease);
+}
+.site-nav a:hover { color: var(--ink); text-decoration: none; }
+.site-nav a:hover::after,
+.site-nav a[aria-current="page"]::after { width: 100%; }
+.site-nav a[aria-current="page"] { color: var(--ink); }
+
+/* ---------- hero ---------- */
+
+.hero { padding: 104px 0 88px; position: relative; }
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 26px; right: 26px; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line) 22%, var(--line) 78%, transparent);
+}
+/* Solid colour here, NOT a background-clip:text gradient. The headline is
+   split into inline-block word spans for the entrance animation, and a
+   parent's clipped background does not paint into those — you get a
+   perfectly animated invisible headline. Gradient fills stay on .article h1,
+   which is never split. */
+.hero h1 {
+  font-size: clamp(44px, 9vw, 92px);
+  line-height: .99;
+  letter-spacing: -0.042em;
+  margin: 0 0 24px;
+  max-width: 16ch;
+  color: var(--ink);
+}
+
+/* Headline arrives a word at a time. JS wraps each word in a .w span; with no
+   JS the h1 is just an h1 and nothing is hidden. */
+.hero h1 .w {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.42em) rotate(1.4deg);
+  animation: word-in .82s var(--ease) forwards;
+  animation-delay: calc(var(--i, 0) * 62ms + 90ms);
+}
+@keyframes word-in {
+  to { opacity: 1; transform: none; }
+}
+
+/* the lime underline that sweeps in beneath the hero — the platform's
+   signature gesture, reused on section rules and nav */
+.hero .eyebrow { position: relative; }
+.hero p {
+  font-size: clamp(17px, 2.1vw, 20px);
+  color: var(--ink-dim);
+  max-width: 58ch;
+  margin: 0 0 34px;
+}
+
+.eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2.6s ease-in-out infinite;
+  flex: none;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: .45; transform: scale(.82); }
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-block;
+  padding: 13px 24px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+  position: relative;
+  transition: transform .22s var(--ease), box-shadow .28s var(--ease), filter .2s var(--ease);
+  box-shadow: none;
+}
+.btn:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+.btn:active { transform: translateY(0); }
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+  box-shadow: none;
+}
+.btn.ghost:hover {
+  border-color: rgba(var(--accent-glow), .55);
+  background: rgba(var(--accent-glow), .06);
+  filter: none;
+}
+
+/* ---------- sections ---------- */
+
+section { padding: 84px 0; position: relative; }
+section::after {
+  content: '';
+  position: absolute;
+  left: 26px; right: 26px; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-soft) 20%, var(--line-soft) 80%, transparent);
+}
+section:last-of-type::after { display: none; }
+
+.section-head { margin-bottom: 36px; }
+.section-head h2 {
+  font-size: clamp(26px, 3.6vw, 38px);
+  margin: 0 0 10px;
+  letter-spacing: -0.028em;
+}
+.section-head p { color: var(--ink-dim); margin: 0; max-width: 62ch; font-size: 17px; }
+
+/* ---------- cards ----------
+   Each card carries a cursor-tracked spotlight. JS writes --mx/--my as
+   percentages; with no JS the gradient simply sits at the default centre and
+   the card still looks intentional. */
+
+/* min() so a single column can never be wider than the phone it's on */
+.grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
+
+.card {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  background:
+var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px;
+  color: inherit;
+  overflow: hidden;
+  transition: transform .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  background: radial-gradient(
+    22ch 22ch at var(--mx, 50%) var(--my, 0%),
+    rgba(var(--accent-glow), .16),
+    transparent 70%
+  );
+  transition: opacity .35s var(--ease);
+}
+a.card:hover {
+  text-decoration: none;
+  transform: translateY(-4px);
+  border-color: rgba(var(--accent-glow), .38);
+  box-shadow: 0 12px 28px -20px rgba(14, 30, 60, .30);
+}
+a.card:hover::before { opacity: 1; }
+
+.card h3 {
+  font-size: 21px;
+  margin: 0 0 10px;
+  color: var(--ink);
+  letter-spacing: -0.022em;
+}
+.card p { margin: 0; color: var(--ink-dim); font-size: 15.5px; }
+
+/* the arrow only appears on cards that actually go somewhere */
+a.card h3::after {
+  content: '→';
+  display: inline-block;
+  margin-left: 8px;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity .3s var(--ease), transform .3s var(--ease);
+}
+a.card:hover h3::after { opacity: 1; transform: translateX(0); }
+
+.card .tag {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+/* ---------- tables ---------- */
+
+/* max-width pins the scroller to its parent so wide tables scroll inside
+   themselves instead of dragging the whole page sideways on a phone. */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 28px 0;
+  max-width: 100%;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 560px;
+  font-size: 15px;
+}
+th, td {
+  text-align: left;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+}
+tbody tr:last-child td { border-bottom: 0; }
+thead th {
+  background: var(--bg-sunk);
+  border-bottom: 1px solid var(--line);
+  font-size: 11.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 600;
+  white-space: nowrap;
+}
+tbody tr { transition: background .2s var(--ease); }
+tbody tr:hover { background: var(--bg-sunk); }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ---------- article ---------- */
+
+.article { padding: 72px 0 96px; }
+.article h1 {
+  font-size: clamp(36px, 6.2vw, 60px);
+  line-height: 1.06;
+  margin: 0 0 18px;
+  letter-spacing: -0.032em;
+  background: linear-gradient(168deg, var(--ink) 12%, var(--ink) 46%, var(--ink-dim) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.article h2 {
+  font-size: clamp(24px, 3.1vw, 32px);
+  margin: 60px 0 18px;
+  letter-spacing: -0.026em;
+  position: relative;
+  padding-top: 22px;
+}
+.article h2::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 46px; height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgb(var(--accent-glow)), transparent);
+}
+.article h3 { font-size: 20px; margin: 38px 0 12px; }
+.article p, .article li { color: var(--ink-dim); }
+.article p { font-size: 17.5px; line-height: 1.72; }
+.article ul, .article ol { padding-left: 22px; }
+.article li { margin-bottom: 9px; }
+.article > .narrow > * { max-width: var(--measure); }
+.article .table-scroll { max-width: 100%; }
+
+/* first paragraph of a take gets a touch more presence */
+.article .byline + p { font-size: 19.5px; color: var(--ink); line-height: 1.62; }
+
+.byline {
+  color: var(--ink-faint);
+  font-size: 14px;
+  margin: 0 0 40px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+blockquote {
+  margin: 30px 0;
+  padding: 4px 0 4px 22px;
+  border-left: 2px solid var(--accent-dim);
+  color: var(--ink-dim);
+  font-style: italic;
+}
+
+.callout {
+  position: relative;
+  background: linear-gradient(150deg, rgba(var(--accent-glow), .07), transparent 60%), var(--bg-raised);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin: 32px 0;
+}
+.callout p { margin: 0; }
+.callout strong { color: var(--ink); }
+
+/* ---------- cold takes: the receipts block ----------
+   Every take ends with what the evidence does and doesn't support.
+   This block is the format's whole credibility, so it's styled to be read,
+   not skipped. Its colours are semantic and stay fixed across desks. */
+
+.receipts {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+var(--bg-sunk);
+  padding: 30px 32px;
+  margin: 56px 0 0;
+}
+.receipts h2 { font-size: 22px; margin: 0 0 6px; padding-top: 0; }
+.receipts h2::before { display: none; }
+.receipts .receipts-sub { color: var(--ink-faint); font-size: 14.5px; margin: 0 0 24px; }
+.receipts h3 {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 26px 0 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.receipts h3::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.receipts h3.holds { color: var(--good); }
+.receipts h3.thin  { color: var(--warn); }
+.receipts h3.fails { color: var(--bad); }
+.receipts ul { margin: 0; padding-left: 20px; }
+.receipts li { margin-bottom: 12px; font-size: 15px; color: var(--ink-dim); }
+.receipts li strong { color: var(--ink); font-weight: 600; }
+.receipts cite { color: var(--ink-faint); font-style: normal; font-size: 14px; }
+
+/* ---------- forms / tool ---------- */
+
+.field { margin-bottom: 16px; }
+label {
+  display: block;
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 7px;
+  font-weight: 600;
+}
+input[type="text"], input[type="number"], input[type="date"], select {
+  width: 100%;
+  padding: 11px 13px;
+  background: var(--bg-sunk);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+}
+input:hover, select:hover { border-color: #33333f; }
+input:focus, select:focus {
+  outline: none;
+  border-color: rgba(var(--accent-glow), .6);
+  box-shadow: 0 0 0 3px rgba(var(--accent-glow), .13);
+  background: var(--bg-raised);
+}
+input[type="number"] { font-variant-numeric: tabular-nums; }
+
+/* ---------- footer ---------- */
+
+.site-footer {
+  border-top: 1px solid var(--line-soft);
+  background: linear-gradient(180deg, transparent, rgba(var(--accent-glow), .07));
+  padding: 64px 0 0;
+  color: var(--ink-faint);
+  font-size: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.site-footer a { color: var(--ink-dim); }
+.site-footer a:hover { color: var(--accent); }
+.site-footer .cols { display: flex; gap: 40px; flex-wrap: wrap; justify-content: space-between; }
+
+/* The wordmark, huge, bleeding off the bottom. Costs nothing, and it's the
+   thing that makes the page feel like it belongs to somebody. */
+.site-footer .cols::after { content: none; }
+.footer-mark {
+  display: block;
+  margin: 56px 0 -0.22em;
+  font-family: ui-serif, "Iowan Old Style", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(64px, 17vw, 210px);
+  line-height: .82;
+  letter-spacing: -0.055em;
+  text-align: center;
+  user-select: none;
+  background: linear-gradient(180deg, rgba(var(--accent-glow), .16), rgba(var(--accent-glow), 0) 82%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  pointer-events: none;
+}
+
+.draft-banner {
+  background: linear-gradient(90deg, rgba(var(--accent-glow), .10), rgba(var(--accent-glow), .17), rgba(var(--accent-glow), .10));
+  border-bottom: 1px solid rgba(var(--accent-glow), .28);
+  color: var(--ink);
+  font-size: 13px;
+  padding: 10px 0;
+  text-align: center;
+  position: relative;
+  z-index: 50;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 860px) {
+  .hero { padding: 72px 0 60px; }
+  section { padding: 60px 0; }
+}
+
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .wrap { padding: 0 20px; }
+  .hero { padding: 56px 0 48px; }
+  .hero h1 { max-width: 100%; }
+  section { padding: 52px 0; }
+  .site-header .wrap { min-height: 60px; padding-top: 10px; padding-bottom: 10px; }
+  .site-nav { gap: 18px; font-size: 14px; }
+  .brand .platform { font-size: 20px; }
+  .card { padding: 22px; }
+  .receipts { padding: 24px 20px; }
+  .article h2 { margin-top: 46px; }
+  .hero::after, section::after { left: 20px; right: 20px; }
+}
+
+/* ---------- respect the setting ----------
+   Everything above is decoration. If someone has asked their OS to stop
+   moving things, all of it stops — no exceptions, no "subtle" survivors. */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .progress { display: none; }
+}
+
+@media print {
+  body::before, body::after, .progress { display: none !important; }
+  body { background: #fff; color: #000; }
+}

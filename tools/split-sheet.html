@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Split sheet calculator — Rap Ledger — coolturkey</title>
+<meta name="description" content="Free split sheet calculator for hip hop songwriters and producers. Splits writing and master shares, checks they total 100%, prints a signable split sheet. Runs in your browser.">
+<link rel="canonical" href="https://coolturkey.org/tools/split-sheet.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%231668d6' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 3.4v8'/%3E%3Cpath d='M18.1 6.1a8.6 8.6 0 1 1-12.2 0'/%3E%3C/g%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="coolturkey">
+<meta property="og:url" content="https://coolturkey.org/tools/split-sheet.html">
+<meta property="og:title" content="Free split sheet calculator">
+<meta property="og:description" content="Split the writing and the master, check it totals 100%, print a signable split sheet. Runs entirely in your browser.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free split sheet calculator">
+<meta name="twitter:description" content="Split the writing and the master, check it totals 100%, print a signable split sheet. Runs entirely in your browser.">
+<meta name="theme-color" content="#f3f6fb">
+<link rel="stylesheet" href="../styles.css?v=1.0.0">
+<style>
+  .tool-layout { display: grid; gap: 32px; grid-template-columns: 1fr; }
+  /* Grid items default to min-width:auto, which lets the wide table push the
+     whole page sideways on a phone. Pin them to the track. */
+  .tool-layout > * { min-width: 0; }
+
+  .meta-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); }
+
+  .split-table input[type="text"],
+  .split-table input[type="number"] { padding: 7px 9px; font-size: 14px; }
+  .split-table td { padding: 7px 8px; }
+  .split-table th { padding: 9px 8px; }
+  .split-table td.pct { width: 108px; }
+  .split-table td.act { width: 44px; text-align: center; }
+  /* the role dropdown was truncating to "Produc…" at narrow table widths */
+  .split-table td.role { min-width: 150px; }
+
+  .icon-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--ink-faint);
+    border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 16px; line-height: 1;
+  }
+  .icon-btn:hover { border-color: var(--bad); color: var(--bad); }
+
+  .totals { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0 8px; }
+  .total-chip {
+    flex: 1 1 200px;
+    min-width: 0;
+    background: var(--bg-raised); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px 16px;
+  }
+  .total-chip .label {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600;
+  }
+  .total-chip .value {
+    font-size: 26px; font-variant-numeric: tabular-nums; font-weight: 600; margin-top: 2px;
+  }
+  .total-chip .note { font-size: 13px; margin-top: 2px; }
+  .ok    { color: var(--good); }
+  .over  { color: var(--bad); }
+  /* --warn, not --accent. The platform accent is the brand blue, which reads as
+     neutral information rather than as a problem. An incomplete split is a
+     problem, so it gets the amber. */
+  .under { color: var(--warn); }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+  /* ---- the printable document ---- */
+  /* The document is always white paper, in both themes, because that is what
+     it will be when it prints. On the light theme it needs an edge and a lift
+     or it dissolves into the page behind it. */
+  .doc {
+    background: #fff; color: #111; border-radius: var(--radius);
+    padding: 40px; margin-top: 40px;
+    border: 1px solid var(--line);
+    box-shadow: 0 18px 40px -28px rgba(14, 30, 60, .45);
+    font-family: ui-serif, "Iowan Old Style", Georgia, serif;
+  }
+  .doc h2 { color: #111; margin: 0 0 4px; font-size: 24px; }
+  .doc .doc-sub { color: #555; font-size: 13px; margin: 0 0 26px; font-family: ui-sans-serif, sans-serif; }
+  .doc table { min-width: 0; font-size: 13px; font-family: ui-sans-serif, sans-serif; }
+  .doc th { background: #f1f1f1; color: #444; border-bottom: 1px solid #bbb; }
+  .doc td { border-bottom: 1px solid #e2e2e2; color: #111; }
+  .doc tbody tr:hover { background: transparent; }
+  .doc .sig-line {
+    margin-top: 26px; padding-top: 22px; border-top: 1px solid #333;
+    font-size: 12px; color: #444; font-family: ui-sans-serif, sans-serif;
+  }
+  .doc .legal { font-size: 11px; color: #666; margin-top: 26px; font-family: ui-sans-serif, sans-serif; line-height: 1.5; }
+  .doc .doc-meta { font-size: 13px; font-family: ui-sans-serif, sans-serif; color:#333; margin-bottom: 22px; }
+  .doc .doc-meta span { display: inline-block; margin-right: 28px; }
+
+  @media print {
+    body { background: #fff; }
+    .draft-banner, .site-header, .site-footer, .no-print { display: none !important; }
+    .doc { margin: 0; padding: 0; border-radius: 0; }
+    .article { padding: 0; }
+    .table-scroll { overflow: visible; }
+  }
+</style>
+</head>
+<body data-desk="rap-ledger">
+
+
+<header class="site-header no-print">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4v8"/><path d="M18.1 6.1a8.6 8.6 0 1 1-12.2 0"/></svg>
+      <span class="platform">coolturkey</span>
+      <span class="desk">Rap Ledger</span>
+    </a>
+    <nav class="site-nav">
+      <a href="../index.html">Home</a>
+      <a href="../cold-takes/index.html">Cold Takes</a>
+      <a href="../rap-ledger.html" aria-current="page">Rap Ledger</a>
+    </nav>
+  </div>
+</header>
+
+<main class="article">
+  <div class="wrap">
+
+    <div class="no-print">
+      <p class="eyebrow">Free tool</p>
+      <h1>Split sheet calculator</h1>
+      <p class="byline">
+        Runs entirely in your browser. Nothing is uploaded, nothing is saved.
+        Close the tab and it's gone.
+      </p>
+
+      <p class="narrow">
+        A split sheet records who wrote what and who owns what, signed on the day, while
+        everyone still agrees. It is the single cheapest piece of paperwork in music and the
+        one most often skipped, and the argument it prevents typically arrives years later,
+        when there's finally money involved.
+      </p>
+
+      <div class="callout narrow">
+        <p>
+          <strong>Two different pies.</strong> The <em>writing share</em> is the song itself,
+          meaning lyrics and composition. The <em>master share</em> is that specific recording.
+          Each must total 100% on its own. A producer might hold 50% of the master and 20%
+          of the writing; those are unrelated numbers.
+        </p>
+      </div>
+
+      <div class="tool-layout">
+
+        <div>
+          <h2>1. The song</h2>
+          <div class="meta-grid">
+            <div class="field">
+              <label for="songTitle">Song title</label>
+              <input type="text" id="songTitle" placeholder="Untitled">
+            </div>
+            <div class="field">
+              <label for="songDate">Date</label>
+              <input type="date" id="songDate">
+            </div>
+            <div class="field">
+              <label for="songPlace">Where it was made</label>
+              <input type="text" id="songPlace" placeholder="Studio / city">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2>2. Everyone in the room</h2>
+          <p style="color:var(--ink-dim);margin-top:-6px">
+            Everyone who contributed creatively, including the person who only changed one line.
+            Especially that person.
+          </p>
+
+          <div class="table-scroll">
+            <table class="split-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>PRO / IPI</th>
+                  <th>Publisher</th>
+                  <th>Writing %</th>
+                  <th>Master %</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn ghost" id="addRow" type="button">+ Add person</button>
+            <button class="btn ghost" id="evenWriting" type="button">Split writing evenly</button>
+            <button class="btn ghost" id="evenMaster" type="button">Split master evenly</button>
+          </div>
+        </div>
+
+        <div>
+          <h2>3. Does it add up?</h2>
+          <div class="totals">
+            <div class="total-chip">
+              <div class="label">Writing share</div>
+              <div class="value" id="wTotal">0%</div>
+              <div class="note" id="wNote">Add people above.</div>
+            </div>
+            <div class="total-chip">
+              <div class="label">Master share</div>
+              <div class="value" id="mTotal">0%</div>
+              <div class="note" id="mNote">Add people above.</div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn" id="printBtn" type="button">Print / save as PDF</button>
+          </div>
+        </div>
+
+      </div>
+
+      <h2>The preview below is what prints</h2>
+      <p style="color:var(--ink-dim)">
+        Print it, get every person to sign it in the room, photograph it, and put the photo
+        somewhere you'll find it in five years.
+      </p>
+    </div>
+
+    <!-- printable document -->
+    <div class="doc" id="doc">
+      <h2 id="docTitle">Split Sheet</h2>
+      <p class="doc-sub">Songwriter and master ownership agreement</p>
+
+      <div class="doc-meta">
+        <span><strong>Song:</strong> <span id="docSong">—</span></span>
+        <span><strong>Date:</strong> <span id="docDate">—</span></span>
+        <span><strong>Location:</strong> <span id="docPlace">—</span></span>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th><th>Role</th><th>PRO / IPI</th><th>Publisher</th>
+              <th>Writing %</th><th>Master %</th>
+            </tr>
+          </thead>
+          <tbody id="docRows"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" style="text-align:right;font-weight:600">Total</td>
+              <td class="num" id="docWTotal" style="font-weight:600">0%</td>
+              <td class="num" id="docMTotal" style="font-weight:600">0%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div id="sigBlock"></div>
+
+      <p class="legal">
+        By signing, each party confirms the shares above are a true and complete record of
+        their contribution to this composition and recording, and agrees these splits govern
+        registration and royalty collection. Writing shares and master shares are separate
+        and each total 100%.
+        This document is a plain-language record, not legal advice. For anything with real
+        money attached, have a music lawyer look at it.
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer no-print">
+  <div class="wrap cols">
+    <div><strong style="color:var(--ink)">coolturkey</strong><br>Music, on your own terms.</div>
+    <div>
+      <a href="../cold-takes/index.html">Cold Takes</a> ·
+      <a href="../rap-ledger.html">Rap Ledger</a> ·
+    </div>
+    <div>Not legal or financial advice.</div>
+  </div>
+  <div class="footer-mark">coolturkey</div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var ROLES = ['Writer', 'Producer', 'Writer + Producer', 'Featured artist', 'Co-writer', 'Engineer', 'Other'];
+  var rowsEl = document.getElementById('rows');
+
+  function el(tag, attrs) {
+    var n = document.createElement(tag);
+    for (var k in attrs) { if (attrs.hasOwnProperty(k)) n.setAttribute(k, attrs[k]); }
+    return n;
+  }
+
+  function makeRow(preset) {
+    preset = preset || {};
+    var tr = el('tr');
+
+    function cell(child, cls) {
+      var td = el('td', cls ? { 'class': cls } : {});
+      td.appendChild(child);
+      tr.appendChild(td);
+      return td;
+    }
+
+    var name = el('input', { type: 'text', placeholder: 'Full legal name', 'data-f': 'name' });
+    name.value = preset.name || '';
+    cell(name);
+
+    var role = el('select', { 'data-f': 'role' });
+    ROLES.forEach(function (r) {
+      var o = el('option'); o.value = r; o.textContent = r;
+      if (preset.role === r) o.selected = true;
+      role.appendChild(o);
+    });
+    cell(role, 'role');
+
+    var pro = el('input', { type: 'text', placeholder: 'APRA / ASCAP', 'data-f': 'pro' });
+    pro.value = preset.pro || '';
+    cell(pro);
+
+    var pub = el('input', { type: 'text', placeholder: 'Self-published', 'data-f': 'pub' });
+    pub.value = preset.pub || '';
+    cell(pub);
+
+    var w = el('input', { type: 'number', min: '0', max: '100', step: '0.01', placeholder: '0', 'data-f': 'w' });
+    w.value = preset.w != null ? preset.w : '';
+    cell(w, 'pct');
+
+    var m = el('input', { type: 'number', min: '0', max: '100', step: '0.01', placeholder: '0', 'data-f': 'm' });
+    m.value = preset.m != null ? preset.m : '';
+    cell(m, 'pct');
+
+    var del = el('button', { type: 'button', 'class': 'icon-btn', title: 'Remove', 'aria-label': 'Remove person' });
+    del.textContent = '×';
+    del.addEventListener('click', function () {
+      tr.parentNode.removeChild(tr);
+      if (!rowsEl.children.length) addRow();
+      render();
+    });
+    cell(del, 'act');
+
+    rowsEl.appendChild(tr);
+    return tr;
+  }
+
+  function addRow(preset) { makeRow(preset); render(); }
+
+  function readRows() {
+    return Array.prototype.map.call(rowsEl.children, function (tr) {
+      function v(f) {
+        var i = tr.querySelector('[data-f="' + f + '"]');
+        return i ? i.value : '';
+      }
+      return {
+        name: v('name').trim(),
+        role: v('role'),
+        pro: v('pro').trim(),
+        pub: v('pub').trim(),
+        w: parseFloat(v('w')) || 0,
+        m: parseFloat(v('m')) || 0
+      };
+    });
+  }
+
+  function fmt(n) {
+    return (Math.round(n * 100) / 100).toString().replace(/\.00$/, '') + '%';
+  }
+
+  function statusFor(total, chipValue, chipNote) {
+    var cls = 'under', note;
+    if (Math.abs(total - 100) < 0.005) { cls = 'ok'; note = 'Adds up. Good.'; }
+    else if (total > 100) { cls = 'over'; note = fmt(total - 100) + ' over. Someone has too much.'; }
+    else if (total === 0) { cls = 'under'; note = 'Nothing entered yet.'; }
+    else { cls = 'under'; note = fmt(100 - total) + ' unallocated.'; }
+    chipValue.className = 'value ' + cls;
+    chipValue.textContent = fmt(total);
+    chipNote.className = 'note ' + cls;
+    chipNote.textContent = note;
+  }
+
+  function splitEvenly(field) {
+    var n = rowsEl.children.length;
+    if (!n) return;
+    // Distribute so the total is exactly 100: give the remainder to the first row.
+    var base = Math.floor((100 / n) * 100) / 100;
+    var used = base * n;
+    var remainder = Math.round((100 - used) * 100) / 100;
+    Array.prototype.forEach.call(rowsEl.children, function (tr, i) {
+      var input = tr.querySelector('[data-f="' + field + '"]');
+      input.value = (i === 0 ? Math.round((base + remainder) * 100) / 100 : base);
+    });
+    render();
+  }
+
+  function render() {
+    var data = readRows();
+    var wT = data.reduce(function (s, r) { return s + r.w; }, 0);
+    var mT = data.reduce(function (s, r) { return s + r.m; }, 0);
+
+    statusFor(wT, document.getElementById('wTotal'), document.getElementById('wNote'));
+    statusFor(mT, document.getElementById('mTotal'), document.getElementById('mNote'));
+
+    var title = document.getElementById('songTitle').value.trim();
+    var date = document.getElementById('songDate').value;
+    var place = document.getElementById('songPlace').value.trim();
+
+    document.getElementById('docSong').textContent = title || '—';
+    document.getElementById('docPlace').textContent = place || '—';
+    document.getElementById('docDate').textContent = date
+      ? new Date(date + 'T00:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
+      : '—';
+    document.getElementById('docTitle').textContent = title ? 'Split Sheet — ' + title : 'Split Sheet';
+
+    var body = document.getElementById('docRows');
+    body.innerHTML = '';
+    var named = data.filter(function (r) { return r.name || r.w || r.m; });
+
+    if (!named.length) {
+      var tr = el('tr');
+      var td = el('td', { colspan: '6' });
+      td.style.color = '#888';
+      td.textContent = 'Add people above and they appear here.';
+      tr.appendChild(td);
+      body.appendChild(tr);
+    } else {
+      named.forEach(function (r) {
+        var tr = el('tr');
+        [r.name || '—', r.role, r.pro || '—', r.pub || 'Self-published'].forEach(function (t) {
+          var td = el('td'); td.textContent = t; tr.appendChild(td);
+        });
+        [r.w, r.m].forEach(function (n) {
+          var td = el('td', { 'class': 'num' }); td.textContent = fmt(n); tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+    }
+
+    document.getElementById('docWTotal').textContent = fmt(wT);
+    document.getElementById('docMTotal').textContent = fmt(mT);
+    document.getElementById('docWTotal').style.color = Math.abs(wT - 100) < 0.005 ? '#116634' : '#a3312d';
+    document.getElementById('docMTotal').style.color = Math.abs(mT - 100) < 0.005 ? '#116634' : '#a3312d';
+
+    var sig = document.getElementById('sigBlock');
+    sig.innerHTML = '';
+    named.forEach(function (r) {
+      var d = el('div', { 'class': 'sig-line' });
+      d.textContent = 'Signed: ______________________________   '
+        + (r.name || 'Name') + '   ·   Date: ______________';
+      sig.appendChild(d);
+    });
+  }
+
+  document.getElementById('addRow').addEventListener('click', function () { addRow(); });
+  document.getElementById('evenWriting').addEventListener('click', function () { splitEvenly('w'); });
+  document.getElementById('evenMaster').addEventListener('click', function () { splitEvenly('m'); });
+  document.getElementById('printBtn').addEventListener('click', function () { window.print(); });
+  document.addEventListener('input', render);
+  document.addEventListener('change', render);
+
+  // Seed with the most common hip hop configuration: one artist, one producer.
+  document.getElementById('songDate').value = new Date().toISOString().slice(0, 10);
+  makeRow({ role: 'Writer' });
+  makeRow({ role: 'Producer' });
+  render();
+})();
+</script>
+
+<script src="../site.js?v=1.0.0" defer></script>
+
+</body>
+</html>
