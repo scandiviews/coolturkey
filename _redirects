@@ -1,3 +1,13 @@
-# www to apex. Belt and braces: the reliable fix is a Cloudflare Redirect Rule
-# on the zone (see GO-LIVE.md), but this covers the Pages-served case.
-https://www.coolturkey.org/* https://coolturkey.org/:splat 301
+# Cloudflare Pages _redirects matches PATHS ONLY. It cannot match on hostname,
+# so www -> apex cannot be done from this file. An earlier version had:
+#
+#   https://www.coolturkey.org/* https://coolturkey.org/:splat 301
+#
+# which looks right and silently never fires.
+#
+# www.coolturkey.org is attached to this project as a custom domain, so it
+# serves the site rather than 522-ing. Making it 301 to the apex needs a
+# zone-level Redirect Rule in the Cloudflare dashboard. See GO-LIVE.md.
+#
+# Until that rule exists, the duplicate is handled by the canonical tag on
+# every page, which points at the apex.
