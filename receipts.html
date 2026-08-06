@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The receipts index — coolturkey</title>
+<meta name="description" content="Every claim this site has made, with its verdict: what holds up, what's shaky, and what didn't survive checking. Searchable, sourced and dated.">
+<link rel="canonical" href="https://coolturkey.org/receipts">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%231668d6' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 3.4v8'/%3E%3Cpath d='M18.1 6.1a8.6 8.6 0 1 1-12.2 0'/%3E%3C/g%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="coolturkey">
+<meta property="og:url" content="https://coolturkey.org/receipts">
+<meta property="og:title" content="The receipts index">
+<meta property="og:description" content="Every claim this site has made, with its verdict. Including the ones we got wrong.">
+<meta property="og:image" content="https://coolturkey.org/card/receipts.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://coolturkey.org/card/receipts.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The receipts index">
+<meta name="twitter:description" content="Every claim this site has made, with its verdict. Including the ones we got wrong.">
+<meta name="theme-color" content="#f3f6fb">
+<link rel="stylesheet" href="styles.css?v=202608061044">
+<style>
+  .controls { display:grid; gap:16px; margin:0 0 8px; }
+  .search-wrap { position:relative; }
+  #q { width:100%; padding:15px 17px; font-size:16.5px; border-radius:var(--radius);
+       border:1px solid var(--line); background:var(--bg-raised); color:var(--ink); font-family:inherit; }
+  #q:focus { outline:none; border-color:rgba(var(--accent-glow),.6); box-shadow:0 0 0 3px rgba(var(--accent-glow),.13); }
+
+  .filters { display:flex; flex-wrap:wrap; gap:8px; }
+  .filters button {
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11.5px;
+    letter-spacing:.11em; text-transform:uppercase; cursor:pointer;
+    padding:9px 15px; border-radius:999px; border:1px solid var(--line);
+    background:transparent; color:var(--ink-dim); transition:all .2s var(--ease);
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .filters button:hover { border-color:var(--ink-faint); color:var(--ink); }
+  .filters button[aria-pressed="true"] { background:var(--ink); color:var(--bg); border-color:var(--ink); }
+  .filters button i { width:8px; height:8px; border-radius:50%; display:inline-block; }
+  .filters .n { opacity:.6; font-size:11px; }
+
+  .count { font-family:ui-monospace,Menlo,monospace; font-size:12.5px; letter-spacing:.08em;
+           text-transform:uppercase; color:var(--ink-faint); margin:26px 0 14px; }
+
+  .claims { display:grid; gap:0; border-top:1px solid var(--line-soft); }
+  .claim { padding:24px 0; border-bottom:1px solid var(--line-soft); display:grid; gap:10px; }
+  .claim .top { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+  .pill {
+    font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; padding:5px 11px; border-radius:999px; font-weight:600;
+    display:inline-flex; align-items:center; gap:7px; white-space:nowrap;
+  }
+  .pill::before { content:''; width:7px; height:7px; border-radius:50%; background:currentColor; }
+  .pill.holds { color:var(--good); background:rgba(23,133,90,.11); }
+  .pill.thin  { color:var(--warn); background:rgba(168,106,6,.12); }
+  .pill.fails { color:var(--bad);  background:rgba(201,59,49,.11); }
+
+  .claim .where { font-size:13px; color:var(--ink-faint); font-family:ui-monospace,Menlo,monospace; letter-spacing:.05em; }
+  .claim .text { font-size:17.5px; color:var(--ink); line-height:1.5; margin:0; }
+  .claim .detail { font-size:15px; color:var(--ink-dim); margin:0; line-height:1.6; }
+  .claim .src { font-size:14px; color:var(--ink-faint); }
+  .claim .src a { color:var(--accent); }
+
+  .empty { padding:50px 0; text-align:center; color:var(--ink-faint); }
+  mark { background:rgba(var(--accent-glow),.28); color:inherit; border-radius:2px; padding:0 2px; }
+</style>
+</head>
+<body data-desk="cold-takes">
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4v8"/><path d="M18.1 6.1a8.6 8.6 0 1 1-12.2 0"/></svg>
+      <span class="platform">coolturkey</span>
+      <span class="desk">Receipts</span>
+    </a>
+    <nav class="site-nav">
+      <a href="index.html">Home</a>
+      <a href="cold-takes/index.html">Cold Takes</a>
+      <a href="rap-ledger.html">Rap Ledger</a>
+      <a href="receipts.html" aria-current="page">Receipts</a>
+    </nav>
+  </div>
+</header>
+
+<main class="article">
+  <div class="wrap">
+
+    <p class="eyebrow">The index</p>
+    <h1>Every claim, and whether it survived</h1>
+    <p class="byline">
+      Updated whenever anything is published or corrected. Last change 3 August 2026.
+    </p>
+
+    <p class="standfirst">
+      Most publications bury their corrections. This is the opposite: one page listing every
+      factual claim the site has made, what happened when it was checked, and where it came
+      from. Including the ones that turned out to be wrong.
+    </p>
+
+    <div class="controls">
+      <div class="search-wrap">
+        <input type="search" id="q" placeholder="Search claims, sources, numbers…" autocomplete="off">
+      </div>
+      <div class="filters" id="filters"></div>
+    </div>
+
+    <p class="count" id="count"></p>
+    <div class="claims" id="claims"></div>
+
+    <h2>How a claim gets a verdict</h2>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="figure" style="color:var(--good)">Holds up</div>
+        <div class="sub">Backed by a source I could actually read, cited with method and sample size where there is one. Strong enough to build an argument on.</div>
+      </div>
+      <div class="stat">
+        <div class="figure" style="color:var(--warn)">Shaky</div>
+        <div class="sub">Used, but weak. Small samples, wrong genre, self-reported, or an industry norm nobody publishes. Quoted with the weakness named rather than hidden.</div>
+      </div>
+      <div class="stat">
+        <div class="figure" style="color:var(--bad)">Didn't survive</div>
+        <div class="sub">Believed going in, then checked, then dropped or corrected. This is the section that makes the other two worth anything.</div>
+      </div>
+    </div>
+
+    <p class="narrow">
+      Nothing gets published here without going through that sorting, and nothing gets quietly
+      edited afterwards. When a number changes, the page says what it used to be, what it is
+      now, and when it moved. The distributor pricing article carries four such corrections at
+      the bottom, all made on the same day the figures were verified against official pages.
+    </p>
+
+    <p class="narrow" style="color:var(--ink-faint);font-size:15px">
+      Spotted something wrong? That's the point of the page. Tell
+      <a href="https://x.com/coolturkeyCT">@coolturkeyCT</a> and it gets corrected, dated, and
+      added to the list.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div><strong style="color:var(--ink)">coolturkey</strong><br>Music, on your own terms.</div>
+    <div>
+      <a href="cold-takes/index.html">Cold Takes</a> ·
+      <a href="rap-ledger.html">Rap Ledger</a> ·
+      <a href="receipts.html">Receipts</a>
+    </div>
+    <div>Not legal or financial advice.</div>
+  </div>
+  <div class="footer-mark">coolturkey</div>
+</footer>
+
+<script src="site.js?v=202608061044" defer></script>
+<script>
+(function () {
+  'use strict';
+
+  /* THE INDEX.
+     One array, appended to whenever anything is published or corrected.
+     verdict: 'holds' | 'thin' | 'fails'
+     Keep the wording identical to the receipts block on the piece itself, so
+     the index can never drift away from the article it describes. */
+  var CLAIMS = [
+    // ---- You can't unhear it ----
+    { v:'holds', t:'Music primes meaning faster than lyrics, and lyrics can dampen emotional response.',
+      d:'Lexical decision task, 50 listeners. ~637ms for music-linked words against ~655ms for lyric-linked. The same paper reports lyrics reducing the intensity and positivity of emotional ratings.',
+      src:'Frontiers in Psychology, 2026', url:'https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2026.1659797/full',
+      from:'You can’t unhear it', href:'cold-takes/lyrics-or-feeling.html', date:'31 Jul 2026' },
+    { v:'holds', t:'Musicians and non-musicians engage different brain networks listening to the same music.',
+      d:'Non-musicians showed greater default mode network engagement, read by the authors as autobiographical and affective processing. Musicians showed more frontal, reward and sensorimotor engagement.',
+      src:'Frontiers in Neuroscience, 2025', url:'https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2025.1649733/full',
+      from:'You can’t unhear it', href:'cold-takes/lyrics-or-feeling.html', date:'31 Jul 2026' },
+    { v:'holds', t:'Toplines, choruses and compound hooks are rated more memorable and salient.',
+      d:'Four pop songs cut into twenty isolated excerpts each, rated by listeners for salience and memorability.',
+      src:'Byron, Rushworth & Stewart, Music Perception, Feb 2025', url:'https://online.ucpress.edu/mp/article/42/3/197/204035/Popular-Music-Excerpts-Are-Rated-As-More-Memorable',
+      from:'You can’t unhear it', href:'cold-takes/lyrics-or-feeling.html', date:'31 Jul 2026' },
+    { v:'thin', t:'The musician/non-musician study is small, and it isn’t about rap at all.',
+      d:'Eighteen people per group and one piece of music, a Piazzolla tango. The authors flag the sample size themselves and note their method is sensitive to a parameter they had to choose arbitrarily.',
+      src:'Frontiers in Neuroscience, 2025', url:'https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2025.1649733/full',
+      from:'You can’t unhear it', href:'cold-takes/lyrics-or-feeling.html', date:'31 Jul 2026' },
+    { v:'thin', t:'The priming study is narrow and says so.',
+      d:'Fifty native French speakers, one genre, one language, one composer. An 18ms effect out of that sample is a lead, not a law.',
+      src:'Frontiers in Psychology, 2026', url:'https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2026.1659797/full',
+      from:'You can’t unhear it', href:'cold-takes/lyrics-or-feeling.html', date:'31 Jul 2026' },
+    { v:'thin', t:'"Lyrics matter as much as melody for mood" comes from a different literature.',
+      d:'A real counterweight to the priming result, but it isn’t measuring the same thing, so the two don’t cleanly cancel out.',
+      src:'Mood-regulation research, various', url:'',
+      from:'You can’t unhear it', href:'cold-takes/lyrics-or-feeling.html', date:'31 Jul 2026' },
+    { v:'fails', t:'"Rap listeners pay more attention to lyrics than listeners of other genres."',
+      d:'Assumed true and went looking for the study. No clean comparative measure exists; the nearest thing is self-reported survey work with no cross-genre control. It might well be true. It doesn’t appear to be demonstrated, so it was never claimed.',
+      src:'No source found', url:'',
+      from:'You can’t unhear it', href:'cold-takes/lyrics-or-feeling.html', date:'31 Jul 2026' },
+
+    // ---- The layup still counts ----
+    { v:'holds', t:'Meek Mill’s "Nightmares To Dreams" reuses the original 2012 instrumental.',
+      d:'Built on the Dreams and Nightmares production rather than a re-recording, and released roughly two months after "600 Racks".',
+      src:'Complex', url:'https://www.complex.com/music/a/backwoodsaltar/meek-mill-nightmares-dreams-single-2026',
+      from:'The layup still counts', href:'cold-takes/hype-is-a-skill.html', date:'31 Jul 2026' },
+    { v:'holds', t:'Fast-tempo music raises arousal and measurably improves physical output.',
+      d:'Both fast and slow pre-task music raised arousal versus silence, but fast-tempo produced significantly higher mean power output. A multilevel meta-analysis finds pre-task music benefits exercise performance.',
+      src:'Music & Science, 2023', url:'https://journals.sagepub.com/doi/10.1177/20592043231174388',
+      from:'The layup still counts', href:'cold-takes/hype-is-a-skill.html', date:'31 Jul 2026' },
+    { v:'holds', t:'"Dreams and Nightmares" was adopted by the Philadelphia Eagles, twice, five years apart.',
+      d:'Walkout at Super Bowl LII in 2018 and again through the LVII run in 2023. Streams rose roughly 150% nationally and 250% in Philadelphia after the NFC Championship.',
+      src:'Billboard / Philadelphia Inquirer', url:'https://www.billboard.com/music/rb-hip-hop/meek-mill-dreams-nightmares-intro-philadelphia-eagles-anthem-8097615/',
+      from:'The layup still counts', href:'cold-takes/hype-is-a-skill.html', date:'31 Jul 2026' },
+    { v:'holds', t:'The song’s effect is structural: it opens restrained and then detonates.',
+      d:'Documented as beginning reflective and motivational before exploding into an aggressive second half, which is the moment people mean when they cite it.',
+      src:'Andscape', url:'https://andscape.com/features/meek-mill-dreams-and-nightmares/',
+      from:'The layup still counts', href:'cold-takes/hype-is-a-skill.html', date:'31 Jul 2026' },
+    { v:'thin', t:'Nobody has studied this specific song in a lab.',
+      d:'The arousal research is about tempo and pre-task music in general. Applying it to one rap record is an inference, not a finding, and it would apply to a great many loud songs.',
+      src:'Inference', url:'',
+      from:'The layup still counts', href:'cold-takes/hype-is-a-skill.html', date:'31 Jul 2026' },
+    { v:'thin', t:'The streaming spike can’t be separated from the city.',
+      d:'A 150% lift during a Philadelphia Super Bowl run measures a song and a moment together. It shows adoption; it doesn’t isolate anything about the record’s quality.',
+      src:'Philadelphia Inquirer', url:'https://www.inquirer.com/philly/super-bowl-lii/eagles-super-bowl-meek-mill-dreams-and-nightmares-20180201.html',
+      from:'The layup still counts', href:'cold-takes/hype-is-a-skill.html', date:'31 Jul 2026' },
+    { v:'thin', t:'"Almost nobody else can make this layup" is unquantified.',
+      d:'The football adoption is genuinely unusual, but no measure exists of how many songs reach that status. It’s an argument, not a fact.',
+      src:'Unquantified', url:'',
+      from:'The layup still counts', href:'cold-takes/hype-is-a-skill.html', date:'31 Jul 2026' },
+    { v:'fails', t:'"Ace Hood isn’t really active any more."',
+      d:'Wrong. B.O.D.Y. in 2023, S.O.U.L. in 2025 with the singles "Mister Hood" and "That Mode", a single in 2024 and another in 2026. What changed is that he stopped appearing in front of me, which is a fact about my listening and not his career.',
+      src:'Ace Hood discography', url:'https://en.wikipedia.org/wiki/Ace_Hood_discography',
+      from:'The layup still counts', href:'cold-takes/hype-is-a-skill.html', date:'31 Jul 2026' },
+
+    // ---- Distribution costs ----
+    { v:'holds', t:'DistroKid’s entry plan is $24.99/yr with no percentage on streaming or social.',
+      d:'Musician tier, unlimited uploads, one artist. Verified against the official pricing page.',
+      src:'DistroKid pricing, official', url:'https://distrokid.com/pricing/',
+      from:'What distribution actually costs', href:'articles/distributor-costs.html', date:'31 Jul 2026' },
+    { v:'holds', t:'TuneCore takes 20% of TikTok, Instagram, Facebook and YouTube earnings, on every plan.',
+      d:'Stated on the official pricing page. Tiers are $24.99, $44.99 and $54.99 a year.',
+      src:'TuneCore pricing, official', url:'https://www.tunecore.com/pricing',
+      from:'What distribution actually costs', href:'articles/distributor-costs.html', date:'31 Jul 2026' },
+    { v:'holds', t:'CD Baby is $9.99 a single and $14.99 an album, paid once, keeping 9% of distribution revenue.',
+      d:'No annual fee and no renewal, which is why it ranks differently the longer a release is held.',
+      src:'CD Baby, official', url:'https://cdbaby.com/cd-baby-cost/',
+      from:'What distribution actually costs', href:'articles/distributor-costs.html', date:'31 Jul 2026' },
+    { v:'thin', t:'CD Baby’s cut on social and UGC monetization is unpublished.',
+      d:'The 9% distribution commission is stated plainly; the social figure is not, and is reported elsewhere as substantially higher. Flagged rather than given a number, and the calculator treats CD Baby’s result as a best case.',
+      src:'Not published by CD Baby', url:'https://cdbaby.com/cd-baby-cost/',
+      from:'What distribution actually costs', href:'articles/distributor-costs.html', date:'31 Jul 2026' },
+    { v:'fails', t:'CORRECTED: DistroKid’s entry plan was published here as $22.99.',
+      d:'It is $24.99. The figure came from a comparison site rather than DistroKid. Both break-even numbers in the article were calculated from it and moved with it: the social break-even went from $115 to $125, and the royalty break-even from $255 to $280.',
+      src:'DistroKid pricing, official', url:'https://distrokid.com/pricing/',
+      from:'What distribution actually costs', href:'articles/distributor-costs.html', date:'31 Jul 2026' },
+    { v:'fails', t:'CORRECTED: TuneCore’s range was published here as topping out at $89.99.',
+      d:'The unlimited plans top out at $54.99. Same cause: a comparison site rather than the source.',
+      src:'TuneCore pricing, official', url:'https://www.tunecore.com/pricing',
+      from:'What distribution actually costs', href:'articles/distributor-costs.html', date:'31 Jul 2026' },
+    { v:'fails', t:'CORRECTED: CD Baby’s album fee was published here as $29.95.',
+      d:'It is $14.99, and the single is $9.99 rather than $9.95.',
+      src:'CD Baby, official', url:'https://cdbaby.com/cd-baby-cost/',
+      from:'What distribution actually costs', href:'articles/distributor-costs.html', date:'31 Jul 2026' },
+
+    // ---- Where your subscription goes ----
+    { v:'holds', t:'Your streaming subscription does not follow what you listened to.',
+      d:'Spotify calculates streamshare "by tallying the total number of streams in a given month and determining what proportion of those streams were people listening to music owned or controlled by a particular rightsholder." Revenue is pooled and split by global share, not by who paid.',
+      src:'Spotify for Artists, official', url:'https://support.spotify.com/us/artists/article/royalties/',
+      from:'Where your subscription goes', href:'tools/where-your-money-goes.html', date:'3 Aug 2026' },
+    { v:'thin', t:'The ~30% platform / ~70% rights holder split is an industry norm, not a published figure.',
+      d:'Spotify publishes the model but not the percentage. The tool applies commonly cited figures and labels them as secondary. Actual splits vary by deal, country and platform.',
+      src:'Royalty Exchange / Chartlex, secondary', url:'https://royaltyexchange.com/blog/how-much-do-streaming-platforms-pay-per-stream',
+      from:'Where your subscription goes', href:'tools/where-your-money-goes.html', date:'3 Aug 2026' }
+  ];
+
+  var LABEL = { holds:'Holds up', thin:'Shaky', fails:'Didn’t survive' };
+  var state = { q:'', v:'all' };
+
+  var claimsEl = document.getElementById('claims');
+  var countEl  = document.getElementById('count');
+
+  function esc(s){ return s.replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function mark(s, q) {
+    if (!q) return esc(s);
+    var re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','ig');
+    return esc(s).replace(re,'<mark>$1</mark>');
+  }
+
+  function matches(c) {
+    if (state.v !== 'all' && c.v !== state.v) return false;
+    if (!state.q) return true;
+    var hay = (c.t + ' ' + c.d + ' ' + c.src + ' ' + c.from).toLowerCase();
+    return hay.indexOf(state.q.toLowerCase()) !== -1;
+  }
+
+  function render() {
+    var rows = CLAIMS.filter(matches);
+    countEl.textContent = rows.length + (rows.length === 1 ? ' claim' : ' claims') +
+      (state.v === 'all' ? '' : ' · ' + LABEL[state.v]) +
+      (state.q ? ' · matching "' + state.q + '"' : '');
+
+    if (!rows.length) {
+      claimsEl.innerHTML = '<p class="empty">Nothing matches that. Which is itself a kind of receipt.</p>';
+      return;
+    }
+
+    claimsEl.innerHTML = rows.map(function (c) {
+      return '<div class="claim">' +
+        '<div class="top">' +
+          '<span class="pill ' + c.v + '">' + LABEL[c.v] + '</span>' +
+          '<span class="where">' + esc(c.from) + ' · ' + c.date + '</span>' +
+        '</div>' +
+        '<p class="text">' + mark(c.t, state.q) + '</p>' +
+        '<p class="detail">' + mark(c.d, state.q) + '</p>' +
+        '<p class="src">' +
+          (c.url ? '<a href="' + c.url + '">' + esc(c.src) + '</a>' : esc(c.src)) +
+          ' — <a href="' + c.href + '">read the piece</a>' +
+        '</p>' +
+      '</div>';
+    }).join('');
+  }
+
+  // filter buttons, with live counts so the shape of the record is visible
+  var counts = { all: CLAIMS.length, holds:0, thin:0, fails:0 };
+  CLAIMS.forEach(function (c) { counts[c.v]++; });
+  var COLOURS = { all:'var(--ink-faint)', holds:'var(--good)', thin:'var(--warn)', fails:'var(--bad)' };
+  document.getElementById('filters').innerHTML =
+    ['all','holds','thin','fails'].map(function (k) {
+      return '<button type="button" data-v="' + k + '" aria-pressed="' + (k === 'all') + '">' +
+        (k === 'all' ? '' : '<i style="background:' + COLOURS[k] + '"></i>') +
+        (k === 'all' ? 'Everything' : LABEL[k]) +
+        ' <span class="n">' + counts[k] + '</span></button>';
+    }).join('');
+
+  document.getElementById('filters').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    state.v = b.dataset.v;
+    Array.prototype.forEach.call(this.querySelectorAll('button'), function (x) {
+      x.setAttribute('aria-pressed', x === b);
+    });
+    render();
+  });
+
+  document.getElementById('q').addEventListener('input', function () {
+    state.q = this.value.trim();
+    render();
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
