@@ -906,6 +906,11 @@ a.lead:hover::before { opacity: 1; }
 a.lead:hover .lead-more { gap: 14px; }
 .lead .lead-more span { transition: gap .3s var(--ease); }
 
+/* The side stats need spacing at EVERY width. Putting the gap only inside the
+   900px breakpoint let them collide on phones and narrow windows. */
+.lead .lead-side { display: grid; gap: 22px; align-content: start; }
+.lead .lead-side .stat { padding: 0; background: transparent; }
+
 @media (min-width: 900px) {
   .lead { grid-template-columns: 1.35fr 1fr; align-items: start; padding: 40px 40px 44px; }
   .lead .lead-kicker { grid-column: 1 / -1; }
