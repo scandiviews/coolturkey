@@ -824,3 +824,217 @@ input[type="number"] { font-variant-numeric: tabular-nums; }
   body::before, body::after, .progress { display: none !important; }
   body { background: #fff; color: #000; }
 }
+
+/* ============================================================
+   EDITORIAL MODULES
+   ------------------------------------------------------------
+   The site had exactly one module: the card. Every page was
+   hero, cards, cards, cards, which is why it read as pasted
+   together rather than designed. These are the other voices a
+   real publication has. Range comes from having more than one
+   thing to say something WITH.
+   ============================================================ */
+
+/* ---------- section surfaces ----------
+   Alternating the ground under a section is the cheapest way to
+   give a long page rhythm. Use sparingly, never twice in a row. */
+
+section.sunk {
+  background:
+    linear-gradient(180deg, rgba(var(--accent-glow), .05), transparent 60%),
+    var(--bg-sunk);
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+}
+section.sunk::after { display: none; }
+
+/* ---------- the lead ----------
+   A front page needs one thing that is obviously the most
+   important thing. Everything being equal weight is what makes a
+   grid of cards feel like a list of files. */
+
+.lead {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 26px;
+  padding: 34px 34px 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(150deg, rgba(var(--accent-glow), .09), transparent 55%),
+    var(--bg-raised);
+  color: inherit;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: transform .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.lead::before {
+  content: '';
+  position: absolute; inset: 0; z-index: -1; opacity: 0;
+  background: radial-gradient(30ch 30ch at var(--mx,50%) var(--my,0%), rgba(var(--accent-glow), .14), transparent 70%);
+  transition: opacity .35s var(--ease);
+}
+a.lead:hover {
+  text-decoration: none;
+  transform: translateY(-3px);
+  border-color: rgba(var(--accent-glow), .42);
+  box-shadow: 0 20px 44px -30px rgba(14,30,60,.45);
+}
+a.lead:hover::before { opacity: 1; }
+
+.lead .lead-kicker {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--accent);
+  display: flex; align-items: center; gap: 10px;
+}
+.lead .lead-kicker::after {
+  content: ''; height: 1px; flex: 1;
+  background: linear-gradient(90deg, rgba(var(--accent-glow), .45), transparent);
+}
+.lead h2 {
+  font-size: clamp(30px, 4.4vw, 50px);
+  line-height: 1.05; letter-spacing: -.032em;
+  margin: 0; color: var(--ink); max-width: 20ch;
+}
+.lead .lead-body { color: var(--ink-dim); font-size: 17.5px; margin: 0; max-width: 60ch; }
+.lead .lead-more {
+  font-weight: 650; color: var(--accent); font-size: 15.5px;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+a.lead:hover .lead-more { gap: 14px; }
+.lead .lead-more span { transition: gap .3s var(--ease); }
+
+@media (min-width: 900px) {
+  .lead { grid-template-columns: 1.35fr 1fr; align-items: start; padding: 40px 40px 44px; }
+  .lead .lead-kicker { grid-column: 1 / -1; }
+  .lead .lead-side { display: grid; gap: 18px; align-content: start; padding-top: 6px; }
+}
+
+/* ---------- stat block ----------
+   Numbers deserve to be seen as numbers. This is the module the
+   Rap Ledger desk was missing entirely. */
+
+.stats {
+  display: grid; gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  background: var(--line-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 32px 0;
+}
+.stat { background: var(--bg-raised); padding: 26px 24px; }
+.stat .figure {
+  font-family: ui-serif, "Iowan Old Style", Georgia, serif;
+  font-size: clamp(34px, 4.6vw, 46px);
+  font-weight: 600; line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.stat .figure.hot  { color: var(--bad); }
+.stat .figure.cool { color: var(--accent); }
+.stat .label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-faint); margin-top: 12px;
+}
+.stat .sub { font-size: 14.5px; color: var(--ink-dim); margin-top: 8px; line-height: 1.5; }
+
+/* ---------- pull quote ----------
+   Breaks a wall of body text and gives the eye somewhere to land. */
+
+.pull {
+  margin: 44px 0;
+  padding: 0 0 0 28px;
+  border-left: 3px solid var(--accent);
+  font-family: ui-serif, "Iowan Old Style", Georgia, serif;
+  font-size: clamp(22px, 2.7vw, 29px);
+  line-height: 1.32;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  max-width: 24ch;
+}
+.pull cite {
+  display: block; margin-top: 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  font-style: normal; color: var(--ink-faint);
+}
+
+/* ---------- bar chart ----------
+   Drawn in CSS from real numbers. A table tells you the values;
+   a chart tells you the shape, and the shape is the argument. */
+
+.chart { margin: 30px 0 8px; display: grid; gap: 14px; }
+.chart .bar-row { display: grid; grid-template-columns: minmax(90px, 150px) 1fr auto; gap: 14px; align-items: center; }
+.chart .bar-name { font-size: 15px; color: var(--ink); font-weight: 600; }
+.chart .bar-track { background: var(--bg-sunk); border-radius: 3px; height: 30px; position: relative; overflow: hidden; border: 1px solid var(--line-soft); }
+.chart .bar-fill {
+  position: absolute; inset: 0 auto 0 0;
+  background: linear-gradient(90deg, rgba(var(--accent-glow), .55), var(--accent));
+  border-radius: 2px;
+  animation: bar-grow 1.1s var(--ease) both;
+}
+.chart .bar-fill.hot { background: linear-gradient(90deg, rgba(224,112,107,.5), var(--bad)); }
+.chart .bar-fill.best { background: linear-gradient(90deg, rgba(90,209,154,.5), var(--good)); }
+@keyframes bar-grow { from { transform: scaleX(0); transform-origin: left; } }
+.chart .bar-value { font-variant-numeric: tabular-nums; font-weight: 650; font-size: 16px; color: var(--ink); min-width: 62px; text-align: right; }
+.chart-note { font-size: 14px; color: var(--ink-faint); margin: 6px 0 0; }
+
+@media (max-width: 560px) {
+  .chart .bar-row { grid-template-columns: 1fr auto; }
+  .chart .bar-track { grid-column: 1 / -1; order: 3; }
+}
+
+/* ---------- numbered editorial list ---------- */
+
+.steps { counter-reset: step; list-style: none; padding: 0; margin: 30px 0; }
+.steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 22px 58px;
+  margin: 0 0 22px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.steps li:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute; left: 0; top: -2px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 15px; font-weight: 600;
+  color: var(--accent);
+}
+.steps strong { display: block; color: var(--ink); font-size: 17.5px; margin-bottom: 5px; }
+.steps span { color: var(--ink-dim); font-size: 15.5px; }
+
+/* ---------- lead paragraph ----------
+   The first paragraph of a piece should look like the first
+   paragraph of a piece. */
+
+.article .standfirst {
+  font-family: ui-serif, "Iowan Old Style", Georgia, serif;
+  font-size: clamp(20px, 2.4vw, 24px);
+  line-height: 1.5;
+  color: var(--ink);
+  letter-spacing: -.012em;
+  margin: 0 0 30px;
+  max-width: 46ch;
+}
+
+/* ---------- meta strip ----------
+   Small structured facts under a headline. Makes a page feel
+   catalogued rather than typed. */
+
+.meta-strip {
+  display: flex; flex-wrap: wrap; gap: 0 26px;
+  padding: 16px 0; margin: 0 0 34px;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.meta-strip b { color: var(--ink); font-weight: 600; letter-spacing: .04em; }
