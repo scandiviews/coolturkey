@@ -166,8 +166,14 @@
      first paint never looks broken. */
 
   if (!reduced && 'IntersectionObserver' in window) {
+    /* The hero is deliberately NOT in this list. It sits above the fold, it is
+       the first thing anyone sees, and it already has the word-by-word headline
+       animation. Fading it in as well stacks two opacity systems on top of each
+       other and leaves the most important text on the site translucent for the
+       best part of a second on every visit. */
     var targets = document.querySelectorAll(
-      '.hero > .wrap > *, .section-head, .card, .callout, .receipts, .table-scroll, .box-list, .buy-band, .for-card'
+      '.section-head, .card, .lead, .stats, .callout, .receipts, .chart, ' +
+      '.table-scroll, .box-list, .buy-band, .for-card, .pull, .steps'
     );
 
     Array.prototype.forEach.call(targets, function (el) {
