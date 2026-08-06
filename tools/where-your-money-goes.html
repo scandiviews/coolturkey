@@ -20,7 +20,7 @@
 <meta name="twitter:title" content="Where your subscription actually goes">
 <meta name="twitter:description" content="None of your subscription follows what you listened to. See where it actually lands.">
 <meta name="theme-color" content="#f3f6fb">
-<link rel="stylesheet" href="../styles.css?v=202608061032">
+<link rel="stylesheet" href="../styles.css?v=202608061034">
 <style>
   .calc-grid { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); }
   .calc-grid > * { min-width:0; }
@@ -109,6 +109,16 @@
             <input type="number" id="topshare" min="0" max="100" step="1" value="15">
             <p class="hint">Percent. If one artist is 15% of your listening, put 15.</p>
           </div>
+          <div class="field">
+            <label for="size">How big is that artist</label>
+            <select id="size">
+              <option value="0.005">Global superstar</option>
+              <option value="0.0002">Well known</option>
+              <option value="0.000005" selected>Mid-tier</option>
+              <option value="0.0000001">Independent</option>
+            </select>
+            <p class="hint">Their rough share of <em>all</em> streams on the platform. Illustrative bands, not measured figures.</p>
+          </div>
         </div>
       </div>
 
@@ -128,6 +138,7 @@
           The same listening, under the model that exists and the model that doesn't.
         </p>
         <div class="versus" id="versus"></div>
+        <p class="chart-note">The left figure moves with the artist-size band you picked, because under pro-rata that is the only thing that decides it. The right figure moves with your listening. That is the entire difference.</p>
         <div class="verdict" id="verdict"></div>
       </div>
 
@@ -209,7 +220,7 @@
   <div class="footer-mark">coolturkey</div>
 </footer>
 
-<script src="../site.js?v=202608061032" defer></script>
+<script src="../site.js?v=202608061034" defer></script>
 <script>
 (function () {
   'use strict';
@@ -217,98 +228,103 @@
   /* Commonly cited industry splits. Spotify publishes the MODEL but not these
      percentages, so they are labelled as secondary on the page and must not be
      presented as official. */
+  /* Commonly cited industry splits. Spotify publishes the MODEL but not these
+     percentages, so they are labelled as secondary on the page and must not be
+     presented as official. */
   var PLATFORM_CUT   = 0.30;   // what the service keeps
   var PUBLISHING_CUT = 0.15;   // songwriter/publishing share of gross, approx
-  // recording share is whatever is left
-
-  /* Illustrative streamshare for a "typical" independent artist: what fraction
-     of ALL streams on the platform in a month they account for. Deliberately
-     round, and described on the page as illustrative rather than measured. */
-  var INDIE_STREAMSHARE = 0.0000001;   // one ten-millionth of global streams
 
   function n(id) {
     var v = parseFloat(document.getElementById(id).value);
     return isFinite(v) && v > 0 ? v : 0;
   }
+
+  /* Money for humans. An earlier version printed "8.4e-5p" to people trying to
+     understand their Spotify bill, which is worse than printing nothing. Tiny
+     amounts get described in words, because at that scale the exact digits are
+     not the information — the smallness is. */
   function money(x) {
-    if (x >= 1)     return '£' + x.toFixed(2);
-    if (x >= 0.01)  return x.toFixed(0) + 'p';
-    if (x >= 0.0001) return x.toFixed(2).replace(/^0\./,'.') + 'p';
-    return '<0.01p';
+    if (x >= 1)    return '\u00a3' + x.toFixed(2);
+    if (x >= 0.01) return (x * 100).toFixed(0) + 'p';
+    if (x > 0)     return 'under 1p';
+    return '\u00a30.00';
   }
-  function pMoney(x) {           // pence, more precision for tiny numbers
+  function tiny(x) {
     var pence = x * 100;
-    if (pence >= 100) return '£' + x.toFixed(2);
-    if (pence >= 1)   return pence.toFixed(1) + 'p';
+    if (pence >= 100)  return '\u00a3' + x.toFixed(2);
+    if (pence >= 1)    return pence.toFixed(1) + 'p';
     if (pence >= 0.01) return pence.toFixed(2) + 'p';
-    return pence.toExponential(1) + 'p';
+    if (pence > 0)     return 'a fraction of a penny';
+    return '\u00a30.00';
   }
 
   function render() {
     var price   = n('price');
     var streams = n('streams');
     var share   = Math.min(100, n('topshare')) / 100;
+    var sizeEl  = document.getElementById('size');
+    var size    = parseFloat(sizeEl.value) / 100;   // percent of all streams -> fraction
 
     var platform   = price * PLATFORM_CUT;
     var publishing = price * PUBLISHING_CUT;
     var recording  = price - platform - publishing;
     var toRights   = price - platform;
 
-    // --- the bar ---
     var pct = function (v) { return price > 0 ? (v / price * 100) : 0; };
-    var segs = [
-      ['segPlatform',   pct(platform),   'Platform'],
-      ['segRecording',  pct(recording),  'Recording'],
-      ['segPublishing', pct(publishing), 'Publishing']
-    ];
-    segs.forEach(function (s) {
-      var el = document.getElementById(s[0]);
-      el.style.flex = '0 0 ' + s[1] + '%';
-      el.textContent = s[1] >= 12 ? Math.round(s[1]) + '%' : '';
-    });
+    [['segPlatform', pct(platform)], ['segRecording', pct(recording)], ['segPublishing', pct(publishing)]]
+      .forEach(function (seg) {
+        var el = document.getElementById(seg[0]);
+        el.style.flex = '0 0 ' + seg[1] + '%';
+        el.textContent = seg[1] >= 12 ? Math.round(seg[1]) + '%' : '';
+      });
 
+    var perPlay = streams > 0 ? price / streams : 0;
     document.getElementById('key').innerHTML =
-      '<span><i class="seg-platform" style="background:#3f4c66"></i>Platform keeps <b>' + money(platform) + '</b></span>' +
+      '<span><i style="background:#3f4c66"></i>Platform keeps <b>' + money(platform) + '</b></span>' +
       '<span><i style="background:#1668d6"></i>Recording rights <b>' + money(recording) + '</b></span>' +
-      '<span><i style="background:#7cc0ff"></i>Publishing <b>' + money(publishing) + '</b></span>';
+      '<span><i style="background:#7cc0ff"></i>Publishing <b>' + money(publishing) + '</b></span>' +
+      (streams > 0 ? '<span style="width:100%;color:var(--ink-faint);margin-top:4px">' +
+        'That works out at <b>' + tiny(perPlay) + '</b> per play, of which <b>' + tiny(perPlay * 0.7) +
+        '</b> reaches rights holders at all.</span>' : '');
 
-    // --- the two models ---
-    // user-centric: your money follows your listening
     var userCentric = toRights * share;
-    // pro-rata: your money joins the pot; the artist is paid by GLOBAL share.
-    // Your personal contribution to them is your rights-holder money multiplied
-    // by their share of all streams, regardless of what you played.
-    var proRata = toRights * INDIE_STREAMSHARE;
+    var proRata     = toRights * size;
 
     document.getElementById('versus').innerHTML =
       '<div>' +
-        '<div class="amount dim">' + pMoney(proRata) + '</div>' +
-        '<div class="cap">What they actually get</div>' +
-        '<div class="exp">Pro-rata, the model every major platform uses. Your money joins one pot and is split by each rights holder\\u2019s share of <em>all</em> streams that month.</div>' +
+        '<div class="amount dim">' + tiny(proRata) + '</div>' +
+        '<div class="cap">What they actually get from you</div>' +
+        '<div class="exp">Pro-rata, the model every major platform uses. Your money joins one pot, split by each rights holder\u2019s share of <em>all</em> streams that month. Your listening is not part of that calculation.</div>' +
       '</div>' +
       '<div>' +
         '<div class="amount good">' + money(userCentric) + '</div>' +
-        '<div class="cap">What they\\u2019d get if it followed you</div>' +
-        '<div class="exp">User-centric, the model that mostly doesn\\u2019t exist. Your subscription divided between the artists you actually played.</div>' +
+        '<div class="cap">What they\u2019d get if it followed you</div>' +
+        '<div class="exp">User-centric, the model that mostly doesn\u2019t exist. Your subscription divided between the artists you actually played.</div>' +
       '</div>';
 
-    // --- verdict ---
     var v = document.getElementById('verdict');
-    if (price <= 0 || streams <= 0) {
-      v.innerHTML = '<p><strong>Put your numbers in.</strong> The gap between the two models is the whole point, and it only appears once there are real figures in the boxes.</p>';
+    if (price <= 0) {
+      v.innerHTML = '<p><strong>Put your subscription price in.</strong> The gap between the two models only appears once there are real figures in the boxes.</p>';
       return;
     }
-    var ratio = userCentric > 0 && proRata > 0 ? userCentric / proRata : 0;
-    var msg = '<p><strong>You gave one artist ' + Math.round(share * 100) + '% of your listening this month.</strong> ' +
-      'Under the model that actually runs, that fact changed almost nothing about what they were paid. ' +
-      'Their payment came from their share of every stream on the platform, not from you.</p>';
+    var msg = '<p><strong>You gave one artist ' + Math.round(share * 100) +
+      '% of your listening this month.</strong> Under the model that actually runs, that changed ' +
+      'almost nothing about what they were paid. Their payment came from their share of every ' +
+      'stream on the platform, not from you.</p>';
 
-    if (ratio > 1000) {
-      msg += '<p>If your subscription followed your listening instead, this artist would receive roughly <strong>' +
-             (ratio >= 1000000 ? Math.round(ratio/1000000) + ' million' : Math.round(ratio/1000) + ' thousand') +
-             ' times more</strong> from you than they do now. That multiplier is the entire argument about how streaming pays.</p>';
+    if (userCentric > 0 && proRata > 0) {
+      var ratio = userCentric / proRata;
+      if (ratio >= 2) {
+        var human = ratio >= 1000000 ? Math.round(ratio / 1000000) + ' million times'
+                  : ratio >= 1000    ? Math.round(ratio / 1000) + ' thousand times'
+                  :                    Math.round(ratio) + ' times';
+        msg += '<p>If your subscription followed your listening, this artist would get roughly <strong>' +
+               human + ' more</strong> from you than they do now.</p>';
+      } else if (ratio < 1) {
+        msg += '<p>At this size the artist actually does better under pro-rata than they would from your listening alone, which is exactly why the model suits the biggest catalogues.</p>';
+      }
     }
-    msg += '<p style="color:var(--ink-faint);font-size:14.5px">And this is before their label or distributor takes its share, which for most signed artists is the larger deduction of the two.</p>';
+    msg += '<p style="color:var(--ink-faint);font-size:14.5px">All of this is before their label or distributor takes its share, which for most signed artists is the larger deduction of the two.</p>';
     v.innerHTML = msg;
   }
 
