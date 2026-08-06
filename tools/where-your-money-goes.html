@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where your subscription actually goes — coolturkey</title>
+<meta name="description" content="You pay for streaming every month. None of that money follows what you listened to. Put your own numbers in and see where it actually lands, and what your favourite artist really got from you.">
+<link rel="canonical" href="https://coolturkey.org/tools/where-your-money-goes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%231668d6' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 3.4v8'/%3E%3Cpath d='M18.1 6.1a8.6 8.6 0 1 1-12.2 0'/%3E%3C/g%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="coolturkey">
+<meta property="og:url" content="https://coolturkey.org/tools/where-your-money-goes">
+<meta property="og:title" content="Where your subscription actually goes">
+<meta property="og:description" content="None of your subscription follows what you listened to. See where it actually lands.">
+<meta property="og:image" content="https://coolturkey.org/card/where-your-money-goes.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://coolturkey.org/card/where-your-money-goes.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Where your subscription actually goes">
+<meta name="twitter:description" content="None of your subscription follows what you listened to. See where it actually lands.">
+<meta name="theme-color" content="#f3f6fb">
+<link rel="stylesheet" href="../styles.css?v=202608061032">
+<style>
+  .calc-grid { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); }
+  .calc-grid > * { min-width:0; }
+  .hint { font-size:13px; color:var(--ink-faint); margin:6px 0 0; }
+
+  /* the split, drawn as one continuous bar so the proportions are the point */
+  .split-bar { display:flex; height:66px; border-radius:var(--radius); overflow:hidden; border:1px solid var(--line); margin:26px 0 14px; }
+  .split-bar div { display:grid; place-items:center; font-family:ui-monospace,Menlo,monospace; font-size:12px;
+                   letter-spacing:.06em; color:#fff; transition:flex-basis .5s var(--ease); overflow:hidden; white-space:nowrap; }
+  .seg-platform  { background:#3f4c66; }
+  .seg-recording { background:#1668d6; }
+  .seg-publishing{ background:#7cc0ff; color:#0b111c !important; }
+
+  .split-key { display:flex; flex-wrap:wrap; gap:8px 26px; font-size:14.5px; color:var(--ink-dim); }
+  .split-key i { width:11px; height:11px; border-radius:2px; display:inline-block; margin-right:8px; vertical-align:-1px; }
+  .split-key b { color:var(--ink); font-variant-numeric:tabular-nums; }
+
+  .verdict { border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:var(--radius);
+             background:var(--bg-sunk); padding:22px 24px; margin:30px 0 0; }
+  .verdict p { margin:0 0 12px; } .verdict p:last-child { margin:0; }
+  .verdict strong { color:var(--ink); }
+
+  .versus { display:grid; gap:1px; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));
+            background:var(--line-soft); border:1px solid var(--line-soft); border-radius:var(--radius);
+            overflow:hidden; margin:26px 0 0; }
+  .versus > div { background:var(--bg-raised); padding:26px 24px; }
+  .versus .amount { font-family:ui-serif,"Iowan Old Style",Georgia,serif; font-size:clamp(34px,5vw,52px);
+                    font-weight:600; letter-spacing:-.035em; line-height:1; font-variant-numeric:tabular-nums; color:var(--ink); }
+  .versus .amount.dim { color:var(--ink-faint); }
+  .versus .amount.good { color:var(--good); }
+  .versus .cap { font-family:ui-monospace,Menlo,monospace; font-size:11px; letter-spacing:.14em;
+                 text-transform:uppercase; color:var(--ink-faint); margin-top:14px; }
+  .versus .exp { font-size:14.5px; color:var(--ink-dim); margin-top:10px; line-height:1.55; }
+</style>
+</head>
+<body data-desk="cold-takes">
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4v8"/><path d="M18.1 6.1a8.6 8.6 0 1 1-12.2 0"/></svg>
+      <span class="platform">coolturkey</span>
+      <span class="desk">For listeners</span>
+    </a>
+    <nav class="site-nav">
+      <a href="../index.html">Home</a>
+      <a href="../cold-takes/index.html">Cold Takes</a>
+      <a href="../rap-ledger.html">Rap Ledger</a>
+    </nav>
+  </div>
+</header>
+
+<main class="article">
+  <div class="wrap">
+
+    <p class="eyebrow">Free tool · for listeners</p>
+    <h1>Where your subscription actually goes</h1>
+    <p class="byline">
+      Runs entirely in your browser. Nothing is uploaded. Model and figures sourced at the
+      bottom, checked 3 August 2026.
+    </p>
+
+    <p class="standfirst">
+      You pay the same amount every month. You probably assume it gets shared out between the
+      artists you played. It doesn't, and the way it actually works is stranger than most
+      people expect.
+    </p>
+
+    <div class="tool-layout">
+
+      <div>
+        <h2>1. What you pay and how you listen</h2>
+        <div class="calc-grid">
+          <div class="field">
+            <label for="price">Monthly subscription</label>
+            <input type="number" id="price" min="0" step="0.01" value="11.99">
+            <p class="hint">Whatever your plan costs. Currency doesn't matter, the maths is the same.</p>
+          </div>
+          <div class="field">
+            <label for="streams">Songs you play a month</label>
+            <input type="number" id="streams" min="1" step="10" value="1200">
+            <p class="hint">Roughly. About 40 a day is average for a heavy listener.</p>
+          </div>
+          <div class="field">
+            <label for="topshare">Share that's your #1 artist</label>
+            <input type="number" id="topshare" min="0" max="100" step="1" value="15">
+            <p class="hint">Percent. If one artist is 15% of your listening, put 15.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>2. Where it lands</h2>
+        <div class="split-bar" id="bar">
+          <div class="seg-platform"  id="segPlatform"></div>
+          <div class="seg-recording" id="segRecording"></div>
+          <div class="seg-publishing" id="segPublishing"></div>
+        </div>
+        <div class="split-key" id="key"></div>
+      </div>
+
+      <div>
+        <h2>3. What your favourite artist got from you</h2>
+        <p style="color:var(--ink-dim);margin-top:-6px">
+          The same listening, under the model that exists and the model that doesn't.
+        </p>
+        <div class="versus" id="versus"></div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+
+    </div>
+
+    <h2>Why your listening doesn't decide anything</h2>
+
+    <p class="narrow">
+      Spotify, and every other major service, uses what's called a <strong>pro-rata</strong> or
+      <strong>streamshare</strong> model. Every subscription and every advert in a given month
+      goes into one pot. Rights holders are then paid out of that pot according to their share
+      of <em>all streams on the whole platform</em>, not according to who paid.
+    </p>
+
+    <blockquote class="pull">
+      Your money is not spent on the music you played. It is added to a pot, and the pot is
+      divided by everybody else's listening.
+    </blockquote>
+
+    <p class="narrow">
+      Spotify describes it plainly in its own artist documentation: streamshare is worked out
+      "by tallying the total number of streams in a given month and determining what proportion
+      of those streams were people listening to music owned or controlled by a particular
+      rightsholder."
+    </p>
+
+    <p class="narrow">
+      The consequence is the bit worth sitting with. If you spend a month listening to one
+      independent rapper and nothing else, almost none of your money reaches them. It goes into
+      the pot, and the pot pays out overwhelmingly to whoever was streamed most globally that
+      month. You could cancel every other artist out of your life and it would barely move
+      their payment.
+    </p>
+
+    <h2>The alternative nobody has adopted at scale</h2>
+
+    <p class="narrow">
+      The obvious other option is called <strong>user-centric</strong>: your subscription is
+      divided between the artists <em>you</em> actually played. It is not a fringe idea, it is
+      just not what the major platforms do. The comparison above is what that difference is
+      worth to one artist, from one listener, in one month.
+    </p>
+
+    <div class="callout narrow">
+      <p>
+        <strong>What this model simplifies, deliberately.</strong> The platform's cut and the
+        recording-versus-publishing split are industry norms rather than published contract
+        terms, and they vary by deal, country and platform. This tool applies commonly cited
+        figures and shows them as such. It also stops at the rights holder: what reaches the
+        artist personally depends on their label or distributor deal, which is a separate and
+        usually much larger deduction. Treat every number here as the shape of the thing, not a
+        statement about your specific account.
+      </p>
+    </div>
+
+    <h2>Sources</h2>
+    <ul style="font-size:15px;color:var(--ink-dim)" class="narrow">
+      <li><a href="https://support.spotify.com/us/artists/article/royalties/">Spotify for Artists: Royalties</a>, official. Confirms the streamshare model and that payouts are calculated from a rights holder's proportion of total platform streams.</li>
+      <li><a href="https://royaltyexchange.com/blog/how-much-do-streaming-platforms-pay-per-stream">Royalty Exchange</a> and <a href="https://www.chartlex.com/blog/money/how-much-streaming-services-pay-artists-2026">Chartlex</a>, secondary. Used for the commonly cited ~30% platform / ~70% rights holder split, which Spotify does not publish.</li>
+    </ul>
+
+    <p class="narrow" style="color:var(--ink-faint);font-size:15px">
+      Found something wrong here? Tell us and the page gets corrected and dated, like everything
+      else on this site.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div><strong style="color:var(--ink)">coolturkey</strong><br>Music, on your own terms.</div>
+    <div>
+      <a href="../cold-takes/index.html">Cold Takes</a> ·
+      <a href="../rap-ledger.html">Rap Ledger</a>
+    </div>
+    <div>Not legal or financial advice.</div>
+  </div>
+  <div class="footer-mark">coolturkey</div>
+</footer>
+
+<script src="../site.js?v=202608061032" defer></script>
+<script>
+(function () {
+  'use strict';
+
+  /* Commonly cited industry splits. Spotify publishes the MODEL but not these
+     percentages, so they are labelled as secondary on the page and must not be
+     presented as official. */
+  var PLATFORM_CUT   = 0.30;   // what the service keeps
+  var PUBLISHING_CUT = 0.15;   // songwriter/publishing share of gross, approx
+  // recording share is whatever is left
+
+  /* Illustrative streamshare for a "typical" independent artist: what fraction
+     of ALL streams on the platform in a month they account for. Deliberately
+     round, and described on the page as illustrative rather than measured. */
+  var INDIE_STREAMSHARE = 0.0000001;   // one ten-millionth of global streams
+
+  function n(id) {
+    var v = parseFloat(document.getElementById(id).value);
+    return isFinite(v) && v > 0 ? v : 0;
+  }
+  function money(x) {
+    if (x >= 1)     return '£' + x.toFixed(2);
+    if (x >= 0.01)  return x.toFixed(0) + 'p';
+    if (x >= 0.0001) return x.toFixed(2).replace(/^0\./,'.') + 'p';
+    return '<0.01p';
+  }
+  function pMoney(x) {           // pence, more precision for tiny numbers
+    var pence = x * 100;
+    if (pence >= 100) return '£' + x.toFixed(2);
+    if (pence >= 1)   return pence.toFixed(1) + 'p';
+    if (pence >= 0.01) return pence.toFixed(2) + 'p';
+    return pence.toExponential(1) + 'p';
+  }
+
+  function render() {
+    var price   = n('price');
+    var streams = n('streams');
+    var share   = Math.min(100, n('topshare')) / 100;
+
+    var platform   = price * PLATFORM_CUT;
+    var publishing = price * PUBLISHING_CUT;
+    var recording  = price - platform - publishing;
+    var toRights   = price - platform;
+
+    // --- the bar ---
+    var pct = function (v) { return price > 0 ? (v / price * 100) : 0; };
+    var segs = [
+      ['segPlatform',   pct(platform),   'Platform'],
+      ['segRecording',  pct(recording),  'Recording'],
+      ['segPublishing', pct(publishing), 'Publishing']
+    ];
+    segs.forEach(function (s) {
+      var el = document.getElementById(s[0]);
+      el.style.flex = '0 0 ' + s[1] + '%';
+      el.textContent = s[1] >= 12 ? Math.round(s[1]) + '%' : '';
+    });
+
+    document.getElementById('key').innerHTML =
+      '<span><i class="seg-platform" style="background:#3f4c66"></i>Platform keeps <b>' + money(platform) + '</b></span>' +
+      '<span><i style="background:#1668d6"></i>Recording rights <b>' + money(recording) + '</b></span>' +
+      '<span><i style="background:#7cc0ff"></i>Publishing <b>' + money(publishing) + '</b></span>';
+
+    // --- the two models ---
+    // user-centric: your money follows your listening
+    var userCentric = toRights * share;
+    // pro-rata: your money joins the pot; the artist is paid by GLOBAL share.
+    // Your personal contribution to them is your rights-holder money multiplied
+    // by their share of all streams, regardless of what you played.
+    var proRata = toRights * INDIE_STREAMSHARE;
+
+    document.getElementById('versus').innerHTML =
+      '<div>' +
+        '<div class="amount dim">' + pMoney(proRata) + '</div>' +
+        '<div class="cap">What they actually get</div>' +
+        '<div class="exp">Pro-rata, the model every major platform uses. Your money joins one pot and is split by each rights holder\\u2019s share of <em>all</em> streams that month.</div>' +
+      '</div>' +
+      '<div>' +
+        '<div class="amount good">' + money(userCentric) + '</div>' +
+        '<div class="cap">What they\\u2019d get if it followed you</div>' +
+        '<div class="exp">User-centric, the model that mostly doesn\\u2019t exist. Your subscription divided between the artists you actually played.</div>' +
+      '</div>';
+
+    // --- verdict ---
+    var v = document.getElementById('verdict');
+    if (price <= 0 || streams <= 0) {
+      v.innerHTML = '<p><strong>Put your numbers in.</strong> The gap between the two models is the whole point, and it only appears once there are real figures in the boxes.</p>';
+      return;
+    }
+    var ratio = userCentric > 0 && proRata > 0 ? userCentric / proRata : 0;
+    var msg = '<p><strong>You gave one artist ' + Math.round(share * 100) + '% of your listening this month.</strong> ' +
+      'Under the model that actually runs, that fact changed almost nothing about what they were paid. ' +
+      'Their payment came from their share of every stream on the platform, not from you.</p>';
+
+    if (ratio > 1000) {
+      msg += '<p>If your subscription followed your listening instead, this artist would receive roughly <strong>' +
+             (ratio >= 1000000 ? Math.round(ratio/1000000) + ' million' : Math.round(ratio/1000) + ' thousand') +
+             ' times more</strong> from you than they do now. That multiplier is the entire argument about how streaming pays.</p>';
+    }
+    msg += '<p style="color:var(--ink-faint);font-size:14.5px">And this is before their label or distributor takes its share, which for most signed artists is the larger deduction of the two.</p>';
+    v.innerHTML = msg;
+  }
+
+  document.addEventListener('input', render);
+  document.addEventListener('change', render);
+  render();
+})();
+</script>
+
+</body>
+</html>
