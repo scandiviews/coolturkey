@@ -20,7 +20,7 @@
 <meta name="twitter:title" content="Where your subscription actually goes">
 <meta name="twitter:description" content="None of your subscription follows what you listened to. See where it actually lands.">
 <meta name="theme-color" content="#f3f6fb">
-<link rel="stylesheet" href="../styles.css?v=202608061034">
+<link rel="stylesheet" href="../styles.css?v=202608061037">
 <style>
   .calc-grid { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); }
   .calc-grid > * { min-width:0; }
@@ -220,7 +220,7 @@
   <div class="footer-mark">coolturkey</div>
 </footer>
 
-<script src="../site.js?v=202608061034" defer></script>
+<script src="../site.js?v=202608061037" defer></script>
 <script>
 (function () {
   'use strict';
@@ -256,6 +256,20 @@
     if (pence >= 0.01) return pence.toFixed(2) + 'p';
     if (pence > 0)     return 'a fraction of a penny';
     return '\u00a30.00';
+  }
+
+  /* Below about a penny, every band collapses into the same words and the size
+     selector looks broken. What actually differentiates a mid-tier artist from
+     an independent one at this scale is TIME, so say it in time. It is also a
+     far more visceral number than six decimal places. */
+  function reachAPound(perMonth) {
+    if (perMonth <= 0) return '';
+    var months = 1 / perMonth;
+    if (months < 24)    return 'About ' + Math.round(months) + ' months of your subscription to reach \u00a31.';
+    var years = months / 12;
+    if (years < 1000)   return 'About ' + Math.round(years).toLocaleString() + ' years of your subscription to reach \u00a31.';
+    if (years < 1000000) return 'Roughly ' + Math.round(years / 1000) + ',000 years of your subscription to reach \u00a31.';
+    return 'Over a million years of your subscription to reach \u00a31.';
   }
 
   function render() {
@@ -294,6 +308,9 @@
       '<div>' +
         '<div class="amount dim">' + tiny(proRata) + '</div>' +
         '<div class="cap">What they actually get from you</div>' +
+        (proRata > 0 && proRata < 0.01
+          ? '<div class="exp" style="color:var(--warn);margin-top:8px"><strong>' + reachAPound(proRata) + '</strong></div>'
+          : '') +
         '<div class="exp">Pro-rata, the model every major platform uses. Your money joins one pot, split by each rights holder\u2019s share of <em>all</em> streams that month. Your listening is not part of that calculation.</div>' +
       '</div>' +
       '<div>' +
