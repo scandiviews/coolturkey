@@ -1038,3 +1038,111 @@ a.lead:hover .lead-more { gap: 14px; }
   color: var(--ink-faint);
 }
 .meta-strip b { color: var(--ink); font-weight: 600; letter-spacing: .04em; }
+
+/* ============================================================
+   INVERTED BLOCKS
+   ------------------------------------------------------------
+   The real problem with the light theme wasn't the module count,
+   it was that every single thing on the page sat at the same
+   value: dark text, pale paper, 1px border. A page with no dark
+   areas and no large fields of colour reads as thin no matter
+   how many module types you add to it.
+
+   .invert re-declares the dark theme's tokens on a single
+   element, so any block can become a deep navy field that the
+   whole design system already knows how to style. Nothing below
+   is a new colour; it is the dark theme, used as punctuation.
+   ============================================================ */
+
+.invert {
+  --bg:         #0b111c;
+  --bg-raised:  #131b2a;
+  --bg-sunk:    #080d16;
+  --line:       #23304a;
+  --line-soft:  #1b2438;
+  --ink:        #eef2f8;
+  --ink-dim:    #a8b6c9;
+  --ink-faint:  #6d7c94;
+  --accent:     #5aa9ff;
+  --good: #5ad19a; --bad: #ff6b61; --warn: #ffc247;
+
+  background: var(--bg);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.invert a { color: var(--accent); }
+
+/* A full-bleed inverted band. This is the single biggest thing
+   the page was missing: somewhere the eye actually stops. */
+section.invert {
+  border-top: 0;
+  border-bottom: 0;
+  position: relative;
+  background:
+    radial-gradient(70ch 50ch at 18% -10%, rgba(90,169,255,.16), transparent 62%),
+    radial-gradient(60ch 46ch at 92% 108%, rgba(255,150,90,.10), transparent 60%),
+    #0b111c;
+}
+section.invert::after { display: none; }
+section.invert h2 { color: var(--ink); }
+section.invert .section-head p { color: var(--ink-dim); }
+
+/* Type gets bigger inside an inverted band, because the contrast
+   can carry it and because that is what makes it read as a
+   deliberate spread rather than a coloured div. */
+section.invert .section-head h2 { font-size: clamp(30px, 4.6vw, 46px); }
+
+/* ---------- the lead, inverted ----------
+   The most important thing on the front page should not look
+   like the other things on the front page. */
+
+.lead.invert {
+  border: 1px solid #22304a;
+  background:
+    radial-gradient(46ch 34ch at 12% 0%, rgba(90,169,255,.20), transparent 60%),
+    linear-gradient(155deg, #16203a 0%, #0b111c 62%);
+  box-shadow: 0 30px 60px -40px rgba(6, 14, 30, .8);
+}
+.lead.invert h2 { color: #fff; }
+.lead.invert .lead-body { color: #b4c2d6; }
+.lead.invert .lead-kicker { color: #7cc0ff; }
+.lead.invert .lead-kicker::after { background: linear-gradient(90deg, rgba(124,192,255,.5), transparent); }
+.lead.invert .lead-more { color: #7cc0ff; }
+.lead.invert::before {
+  background: radial-gradient(30ch 30ch at var(--mx,50%) var(--my,0%), rgba(124,192,255,.16), transparent 70%);
+}
+a.lead.invert:hover { border-color: rgba(124,192,255,.5); }
+
+/* ---------- oversized figures ----------
+   Scale contrast is the other half of what was missing. A "big"
+   number at 46px next to 17px body text is not big. */
+
+.stats.huge .figure { font-size: clamp(48px, 7.5vw, 82px); letter-spacing: -.045em; }
+.stats.huge .stat { padding: 34px 28px; }
+.stats.huge .label { font-size: 11.5px; margin-top: 16px; }
+
+/* Inverted stat grid: hairlines instead of card edges, so it
+   reads as a table of figures rather than a row of boxes. */
+.stats.invert {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.09);
+}
+.stats.invert .stat { background: transparent; }
+.stats.invert .figure { color: #fff; }
+.stats.invert .figure.hot  { color: #ff8a80; }
+.stats.invert .figure.cool { color: #7cc0ff; }
+.stats.invert .label { color: #8296b0; }
+.stats.invert .sub   { color: #aebbcd; }
+
+/* ---------- a rule with a label on it ----------
+   Cheap editorial furniture. Makes a page feel typeset. */
+
+.rule {
+  display: flex; align-items: center; gap: 18px;
+  margin: 0 0 34px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.rule::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: .28; }
+.rule b { color: var(--accent); font-weight: 600; }
