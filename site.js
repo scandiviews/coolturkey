@@ -193,5 +193,36 @@
         io.observe(el);
       }
     });
+
+    /* Safety net, and it is not optional.
+     *
+     * IntersectionObserver only reports elements that actually pass through
+     * the viewport. Jump the page instead of scrolling it — an anchor link,
+     * the End key, dragging the scrollbar, restoring a scroll position on
+     * reload — and every element skipped over never intersects, never fires,
+     * and stays at opacity 0 forever. Content silently disappears.
+     *
+     * So on every scroll, sweep anything that is now at or above the fold and
+     * reveal it regardless of whether the observer ever saw it. Throttled to
+     * one pass per frame. */
+    var sweeping = false;
+    var sweep = function () {
+      if (sweeping) return;
+      sweeping = true;
+      requestAnimationFrame(function () {
+        var pending = document.querySelectorAll('.reveal:not(.is-in)');
+        Array.prototype.forEach.call(pending, function (el) {
+          if (el.getBoundingClientRect().top < window.innerHeight) {
+            el.style.transitionDelay = '0ms';
+            el.classList.add('is-in');
+            io.unobserve(el);
+          }
+        });
+        sweeping = false;
+      });
+    };
+    window.addEventListener('scroll', sweep, { passive: true });
+    window.addEventListener('resize', sweep, { passive: true });
+    window.addEventListener('load', sweep);
   }
 })();
