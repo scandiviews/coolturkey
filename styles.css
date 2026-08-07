@@ -1228,3 +1228,52 @@ a.lead.invert:hover { border-color: rgba(124,192,255,.5); }
   .receipts { padding: 26px 20px 30px; }
   .site-footer { margin-top: 56px; }
 }
+
+/* ---------- email signup ----------
+   Injected by site.js immediately before the footer, and ONLY when an endpoint
+   is configured. A signup box that doesn't sign anyone up is worse than no box,
+   which is the same reason the unsellable product page lost its buy button. */
+
+.signup {
+  --bg-raised:  #131b2a;
+  --line:       #23304a;
+  --ink:        #eef2f8;
+  --ink-dim:    #a8b6c9;
+  --ink-faint:  #7183a0;
+  --accent:     #5aa9ff;
+
+  background:
+    radial-gradient(46ch 32ch at 10% 0%, rgba(90,169,255,.16), transparent 62%),
+    #0e1728;
+  color: var(--ink-dim);
+  padding: 46px 0 50px;
+  margin-top: 80px;
+}
+.signup + .site-footer { margin-top: 0; }
+
+.signup h2 { color: var(--ink); font-size: clamp(24px, 3.2vw, 32px); margin: 0 0 10px; letter-spacing: -.026em; }
+.signup p  { margin: 0 0 22px; max-width: 56ch; font-size: 16.5px; line-height: 1.6; }
+.signup .fine { font-size: 13.5px; color: var(--ink-faint); margin: 14px 0 0; max-width: 60ch; }
+.signup .fine a { color: var(--ink-dim); }
+
+.signup form { display: flex; flex-wrap: wrap; gap: 10px; max-width: 560px; }
+.signup input[type="email"] {
+  flex: 1 1 260px; min-width: 0;
+  padding: 13px 15px; font-size: 16px;
+  background: #0a1020; border: 1px solid var(--line);
+  color: var(--ink); border-radius: var(--radius); font-family: inherit;
+}
+.signup input[type="email"]::placeholder { color: #64748f; }
+.signup input[type="email"]:focus {
+  outline: none; border-color: rgba(90,169,255,.6);
+  box-shadow: 0 0 0 3px rgba(90,169,255,.15);
+}
+.signup button {
+  padding: 13px 24px; font-size: 15px; font-weight: 650; cursor: pointer;
+  border: 0; border-radius: var(--radius); font-family: inherit;
+  background: var(--accent); color: #071120;
+  transition: filter .2s var(--ease), transform .2s var(--ease);
+}
+.signup button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+@media (max-width: 640px) { .signup { padding: 36px 0 40px; margin-top: 56px; } }

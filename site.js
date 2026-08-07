@@ -73,6 +73,42 @@
     nav.appendChild(toggle);
   }
 
+
+  /* ---- email signup ----
+     One constant turns this on across all 16 pages. Leave it empty and nothing
+     renders at all, because a signup box that cannot sign anyone up is worse
+     than no box. Paste the Buttondown (or equivalent) form action in and the
+     block appears everywhere on the next deploy.
+
+     Deliberately a plain HTML form POST: no third-party script, no tracking
+     pixel, and it still works with JavaScript disabled once rendered. */
+
+  var SIGNUP_ENDPOINT = '';   // e.g. 'https://buttondown.com/api/emails/embed-subscribe/coolturkey'
+
+  if (SIGNUP_ENDPOINT) {
+    var footer = document.querySelector('.site-footer');
+    if (footer) {
+      var box = document.createElement('section');
+      box.className = 'signup';
+      box.innerHTML =
+        '<div class="wrap">' +
+          '<h2>Get the next one</h2>' +
+          '<p>New Cold Takes and anything that changes on the numbers side. No more than ' +
+            'one email a week, and every correction goes out too, not just the wins.</p>' +
+          '<form action="' + SIGNUP_ENDPOINT + '" method="post" target="_blank">' +
+            '<label for="bd-email" class="sr-only" style="position:absolute;left:-9999px">Email address</label>' +
+            '<input type="email" name="email" id="bd-email" placeholder="you@example.com" required autocomplete="email">' +
+            '<button type="submit">Subscribe</button>' +
+          '</form>' +
+          '<p class="fine">This is the one place on the site where something you type does leave ' +
+            'your browser, and only because it has to. The tools do not: everything you enter in ' +
+            'the split sheet or the calculators stays on your machine. Unsubscribe whenever, and ' +
+            'the list is never sold or shared. <a href="/how-it-works">How it works</a>.</p>' +
+        '</div>';
+      footer.parentNode.insertBefore(box, footer);
+    }
+  }
+
   /* ---- header goes solid once you've left the top ---- */
 
   var header = document.querySelector('.site-header');
