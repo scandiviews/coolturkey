@@ -1277,3 +1277,95 @@ a.lead.invert:hover { border-color: rgba(124,192,255,.5); }
 .signup button:hover { filter: brightness(1.08); transform: translateY(-1px); }
 
 @media (max-width: 640px) { .signup { padding: 36px 0 40px; margin-top: 56px; } }
+
+/* ============================================================
+   EMPTY STATES
+   ------------------------------------------------------------
+   There were five zero states in the product and exactly one of
+   them had any styling: a line of centred grey text. An empty
+   state should read as a stage before the content arrives, not
+   as something that failed to load.
+
+   The motif is the power mark, which already means standby. That
+   is precisely what an empty state is, so it does real work here
+   rather than being decoration.
+   ============================================================ */
+
+.empty-state {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 58px 26px 62px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(30ch 22ch at 50% 0%, rgba(var(--accent-glow), .07), transparent 70%),
+    var(--bg-sunk);
+}
+.empty-state .motif {
+  width: 40px; height: 40px;
+  margin-bottom: 14px;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  opacity: .38;
+}
+.empty-state .es-title {
+  font-family: ui-serif, "Iowan Old Style", Georgia, serif;
+  font-size: 20px; letter-spacing: -.02em;
+  color: var(--ink);
+}
+.empty-state .es-hint {
+  font-size: 15px; color: var(--ink-dim);
+  max-width: 42ch; line-height: 1.6; margin: 0;
+}
+
+/* the motif breathes, very slowly, so the state reads as waiting
+   rather than as broken. Killed by prefers-reduced-motion above. */
+@keyframes standby { 0%,100% { opacity:.38 } 50% { opacity:.16 } }
+.empty-state .motif { animation: standby 4.2s ease-in-out infinite; }
+
+/* inside the printable split sheet, which is always white paper */
+.doc .empty-state {
+  border-color: #d8d8d8;
+  background: #fafafa;
+  padding: 44px 22px 48px;
+}
+.doc .empty-state .motif { stroke: #9aa4b4; }
+.doc .empty-state .es-title { color: #333; }
+.doc .empty-state .es-hint  { color: #777; }
+
+@media (max-width: 480px) {
+  .empty-state { padding: 44px 18px 48px; }
+  .empty-state .motif { width: 34px; height: 34px; }
+}
+
+/* ---------- deliberate section transitions ----------
+   Where paper meets ink there was a hard seam. A short gradient
+   lip on each side makes the change read as intended rather than
+   as two pages stuck together. */
+
+section.invert { position: relative; }
+section.invert::before,
+.site-footer::before {
+  content: '';
+  position: absolute; left: 0; right: 0; top: -1px;
+  height: 26px;
+  background: linear-gradient(180deg, rgba(11,17,28,0), rgba(11,17,28,.55));
+  pointer-events: none;
+  transform: translateY(-26px);
+}
+.site-footer { position: relative; }
+
+/* An empty state is already a frame. Anything that normally frames its
+   contents must stand down when it is holding one, or you get a box inside a
+   box, which the design standard rules out. */
+.verdict:has(.empty-state),
+.alert:has(.empty-state) {
+  border: 0; background: transparent; padding: 0;
+}
+/* the timeline spine has nothing to thread when there are no steps */
+.tl:has(.empty-state) { padding-left: 0; }
+.tl:has(.empty-state)::before { display: none; }

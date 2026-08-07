@@ -20,7 +20,7 @@
 <meta name="twitter:title" content="Release timeline builder">
 <meta name="twitter:description" content="Pick a drop date, get the working-backwards schedule with real dates and the deadlines you cannot move.">
 <meta name="theme-color" content="#f3f6fb">
-<link rel="stylesheet" href="../styles.css?v=7da02eb9da">
+<link rel="stylesheet" href="../styles.css?v=09306b0d68">
 <style>
   .date-row { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr)); }
   .date-row > * { min-width:0; }
@@ -186,7 +186,7 @@
   <div class="footer-mark">coolturkey</div>
 </footer>
 
-<script src="../site.js?v=7da02eb9da" defer></script>
+<script src="../site.js?v=09306b0d68" defer></script>
 <script>
 (function () {
   'use strict';
@@ -264,7 +264,16 @@
     var raw = dropEl.value;
     var alerts = document.getElementById('alerts');
     var tl = document.getElementById('timeline');
-    if (!raw) { alerts.innerHTML = '<div class="alert">Pick a release date to build the schedule.</div>'; tl.innerHTML = ''; return; }
+    if (!raw) {
+      alerts.innerHTML = '';
+      tl.innerHTML =
+        '<div class="empty-state">' +
+          '<svg class="motif" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M18.4 6.3a9 9 0 1 1-12.8 0"/></svg>' +
+          '<div class="es-title">Pick a date</div>' +
+          '<p class="es-hint">Every deadline below is calculated backwards from your release day.</p>' +
+        '</div>';
+      return;
+    }
 
     var drop = noon(new Date(raw + 'T12:00:00'));
     var today = noon(new Date());

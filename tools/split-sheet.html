@@ -20,7 +20,7 @@
 <meta name="twitter:title" content="Free split sheet calculator">
 <meta name="twitter:description" content="Split the writing and the master, check it totals 100%, print a signable split sheet. Runs entirely in your browser.">
 <meta name="theme-color" content="#f3f6fb">
-<link rel="stylesheet" href="../styles.css?v=7da02eb9da">
+<link rel="stylesheet" href="../styles.css?v=09306b0d68">
 <style>
   .tool-layout { display: grid; gap: 32px; grid-template-columns: 1fr; }
   /* Grid items default to min-width:auto, which lets the wide table push the
@@ -427,8 +427,13 @@
     if (!named.length) {
       var tr = el('tr');
       var td = el('td', { colspan: '6' });
-      td.style.color = '#888';
-      td.textContent = 'Add people above and they appear here.';
+      td.style.padding = '0';
+      td.innerHTML =
+        '<div class="empty-state">' +
+          '<svg class="motif" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M18.4 6.3a9 9 0 1 1-12.8 0"/></svg>' +
+          '<div class="es-title">Nobody on the sheet yet</div>' +
+          '<p class="es-hint">Add everyone who was in the room above. They appear here as a signable document.</p>' +
+        '</div>';
       tr.appendChild(td);
       body.appendChild(tr);
     } else {
@@ -474,7 +479,7 @@
 })();
 </script>
 
-<script src="../site.js?v=7da02eb9da" defer></script>
+<script src="../site.js?v=09306b0d68" defer></script>
 
 </body>
 </html>

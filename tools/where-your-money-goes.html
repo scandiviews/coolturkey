@@ -20,7 +20,7 @@
 <meta name="twitter:title" content="Where your subscription actually goes">
 <meta name="twitter:description" content="None of your subscription follows what you listened to. See where it actually lands.">
 <meta name="theme-color" content="#f3f6fb">
-<link rel="stylesheet" href="../styles.css?v=7da02eb9da">
+<link rel="stylesheet" href="../styles.css?v=09306b0d68">
 <style>
   .calc-grid { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); }
   .calc-grid > * { min-width:0; }
@@ -223,7 +223,7 @@
   <div class="footer-mark">coolturkey</div>
 </footer>
 
-<script src="../site.js?v=7da02eb9da" defer></script>
+<script src="../site.js?v=09306b0d68" defer></script>
 <script>
 (function () {
   'use strict';
@@ -324,7 +324,11 @@
 
     var v = document.getElementById('verdict');
     if (price <= 0) {
-      v.innerHTML = '<p><strong>Put your subscription price in.</strong> The gap between the two models only appears once there are real figures in the boxes.</p>';
+      v.innerHTML = '<div class="empty-state">' +
+        '<svg class="motif" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M18.4 6.3a9 9 0 1 1-12.8 0"/></svg>' +
+        '<div class="es-title">Put your numbers in</div>' +
+        '<p class="es-hint">The gap between the two models only appears once there is a real subscription price above.</p>' +
+      '</div>';
       return;
     }
     var msg = '<p><strong>You gave one artist ' + Math.round(share * 100) +

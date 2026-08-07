@@ -20,7 +20,7 @@
 <meta name="twitter:title" content="The receipts index">
 <meta name="twitter:description" content="Every claim this site has made, with its verdict. Including the ones we got wrong.">
 <meta name="theme-color" content="#f3f6fb">
-<link rel="stylesheet" href="styles.css?v=7da02eb9da">
+<link rel="stylesheet" href="styles.css?v=09306b0d68">
 <style>
   .controls { display:grid; gap:16px; margin:0 0 8px; }
   .search-wrap { position:relative; }
@@ -166,7 +166,7 @@
   <div class="footer-mark">coolturkey</div>
 </footer>
 
-<script src="site.js?v=7da02eb9da" defer></script>
+<script src="site.js?v=09306b0d68" defer></script>
 <script>
 (function () {
   'use strict';
@@ -323,7 +323,11 @@
       (state.q ? ' · matching "' + state.q + '"' : '');
 
     if (!rows.length) {
-      claimsEl.innerHTML = '<p class="empty">Nothing matches that. Which is itself a kind of receipt.</p>';
+      claimsEl.innerHTML = '<div class="empty-state">' +
+        '<svg class="motif" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M18.4 6.3a9 9 0 1 1-12.8 0"/></svg>' +
+        '<div class="es-title">Nothing matches that</div>' +
+        '<p class="es-hint">No claim on the site uses those words. Try a distributor, a number, or one of the three verdicts.</p>' +
+      '</div>';
       return;
     }
 
