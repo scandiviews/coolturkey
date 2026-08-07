@@ -313,8 +313,9 @@
         var past = daysBetween(today, date) < 0;
         if (past && !s.release) cls = 'past';
         when = '<b>' + fmt(date) + '</b>';
-        if (s.d > 0)      when += ' · ' + s.d + ' days before';
-        else if (s.d < 0) when += ' · ' + (-s.d) + ' days after';
+        var plural = function (n) { return n === 1 ? ' day' : ' days'; };
+        if (s.d > 0)      when += ' · ' + s.d + plural(s.d) + ' before';
+        else if (s.d < 0) when += ' · ' + (-s.d) + plural(-s.d) + ' after';
         else              when += ' · release day';
         if (past) flag = ' <span class="flag">· already passed</span>';
       }
