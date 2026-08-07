@@ -1152,3 +1152,79 @@ a.lead.invert:hover { border-color: rgba(124,192,255,.5); }
 .rule::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: .28; }
 .rule b { color: var(--accent); font-weight: 600; }
 
+
+/* ============================================================
+   DARK FOOT + DARK RECEIPTS
+   ------------------------------------------------------------
+   Eight pages were still uniformly pale. Rather than bolting a
+   bespoke inverted band onto each one, two structural changes
+   cover every page at once and both are semantically right.
+
+   1. The footer inverts. Every page now ends on a dark field,
+      so nothing trails off into the same paper it started on.
+   2. The receipts block inverts. On a Cold Take it is the most
+      important thing on the page and it should not look like a
+      slightly greyer callout.
+   ============================================================ */
+
+.site-footer {
+  --bg-raised:  #131b2a;
+  --bg-sunk:    #080d16;
+  --line:       #23304a;
+  --line-soft:  #1b2438;
+  --ink:        #eef2f8;
+  --ink-dim:    #a8b6c9;
+  --ink-faint:  #7183a0;
+  --accent:     #5aa9ff;
+
+  background:
+    radial-gradient(60ch 40ch at 12% 0%, rgba(90,169,255,.13), transparent 62%),
+    radial-gradient(50ch 36ch at 92% 100%, rgba(255,150,90,.08), transparent 60%),
+    #0b111c;
+  color: var(--ink-dim);
+  border-top: 0;
+  margin-top: 80px;
+}
+.site-footer strong { color: var(--ink) !important; }
+.site-footer a { color: var(--ink-dim); }
+.site-footer a:hover { color: var(--accent); }
+
+/* the oversized wordmark now has something to sit in */
+.site-footer .footer-mark {
+  background: linear-gradient(180deg, rgba(90,169,255,.20), rgba(90,169,255,0) 78%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- receipts, inverted ---------- */
+
+.receipts {
+  --bg-raised:  #131b2a;
+  --bg-sunk:    #080d16;
+  --line:       #23304a;
+  --line-soft:  #1b2438;
+  --ink:        #eef2f8;
+  --ink-dim:    #aab8cb;
+  --ink-faint:  #7183a0;
+  --accent:     #5aa9ff;
+  --good: #5ad19a; --warn: #ffc247; --bad: #ff6b61;
+
+  background:
+    radial-gradient(44ch 30ch at 6% 0%, rgba(90,169,255,.13), transparent 62%),
+    #0b111c;
+  border-color: #22304a;
+  color: var(--ink-dim);
+  padding: 34px 34px 38px;
+}
+.receipts h2 { color: var(--ink); }
+.receipts .receipts-sub { color: var(--ink-faint); }
+.receipts li { color: var(--ink-dim); }
+.receipts li strong { color: var(--ink); }
+.receipts cite { color: var(--ink-faint); }
+.receipts a { color: var(--accent); }
+
+@media (max-width: 640px) {
+  .receipts { padding: 26px 20px 30px; }
+  .site-footer { margin-top: 56px; }
+}
