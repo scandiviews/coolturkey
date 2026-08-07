@@ -2,8 +2,14 @@
 # Deploy coolturkey.org. Run from this directory: ./deploy.sh
 set -euo pipefail
 
-# Bump the asset version so Cloudflare can't serve a stale stylesheet.
-V="$(date +%Y%m%d%H%M)"
+# Version assets by CONTENT, not by clock.
+#
+# This used to be `date +%Y%m%d%H%M`. Two deploys inside the same minute got the
+# same ?v= string, and because _headers marks these immutable for a year, the
+# edge kept serving the OLD file forever. A change could be permanently
+# invisible while every check said it had deployed. Hashing the files means the
+# version can only repeat if the content is genuinely identical.
+V="$(cat styles.css site.js | shasum | cut -c1-10)"
 /usr/bin/find . -name '*.html' -not -path './node_modules/*' -print0 \
   | xargs -0 /usr/bin/sed -i '' -E "s/\?v=[0-9a-zA-Z.\-]+\"/?v=$V\"/g"
 echo "assets versioned $V"

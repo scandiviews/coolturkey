@@ -11,3 +11,6 @@
 #
 # Until that rule exists, the duplicate is handled by the canonical tag on
 # every page, which points at the apex.
+
+# renamed 7 Aug 2026, keep the old URL working
+/how-this-is-made /how-it-works 301
