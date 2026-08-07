@@ -81,9 +81,17 @@
      block appears everywhere on the next deploy.
 
      Deliberately a plain HTML form POST: no third-party script, no tracking
-     pixel, and it still works with JavaScript disabled once rendered. */
+     pixel, and it still works with JavaScript disabled once rendered. Whichever
+     provider is used, take the plain-HTML form action rather than the
+     JavaScript embed, or the no-tracking claim in the fine print stops being
+     true.
 
-  var SIGNUP_ENDPOINT = '';   // e.g. 'https://buttondown.com/api/emails/embed-subscribe/coolturkey'
+     Free tiers, checked at source 7 Aug 2026:
+       Kit          1,000 subscribers, unlimited broadcasts   <- most headroom
+       MailerLite     250 subscribers, 2,500 emails/month
+       Buttondown     100 subscribers, unlimited sends        <- leanest */
+
+  var SIGNUP_ENDPOINT = '';   // e.g. 'https://app.kit.com/forms/1234567/subscriptions'
 
   if (SIGNUP_ENDPOINT) {
     var footer = document.querySelector('.site-footer');
