@@ -206,7 +206,11 @@
 
   /* offset = days BEFORE release. hard = a published deadline, not advice. */
   var PLAN = [
-    { d:  0,  hard:false, single:true, ep:true,
+    /* d is "days before release" and also drives the sort. The split sheet
+       happens at the session, which is before everything and has no fixed
+       offset, so it gets an arbitrarily large d to sort to the top and is
+       rendered with a label instead of a date. */
+    { d: 999, hard:false, single:true, ep:true,
       t:'Sign the split sheet',
       w:'On the day of the session, before anyone leaves. It costs nothing now and the same conversation two years later costs a friendship.',
       rel:'session' },
