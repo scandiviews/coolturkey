@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Release timeline builder — Rap Ledger — coolturkey</title>
+<meta name="description" content="Pick a drop date and get the whole schedule working backwards with real dates: distributor deadline, editorial pitch window, artwork, metadata, pre-save. Free, runs in your browser.">
+<link rel="canonical" href="https://coolturkey.org/tools/release-timeline">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%231668d6' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 3.4v8'/%3E%3Cpath d='M18.1 6.1a8.6 8.6 0 1 1-12.2 0'/%3E%3C/g%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="coolturkey">
+<meta property="og:url" content="https://coolturkey.org/tools/release-timeline">
+<meta property="og:title" content="Release timeline builder">
+<meta property="og:description" content="Pick a drop date, get the working-backwards schedule with real dates and the deadlines you cannot move.">
+<meta property="og:image" content="https://coolturkey.org/card/release-timeline.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://coolturkey.org/card/release-timeline.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Release timeline builder">
+<meta name="twitter:description" content="Pick a drop date, get the working-backwards schedule with real dates and the deadlines you cannot move.">
+<meta name="theme-color" content="#f3f6fb">
+<link rel="stylesheet" href="../styles.css?v=521945fb56">
+<style>
+  .date-row { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr)); }
+  .date-row > * { min-width:0; }
+  .hint { font-size:13px; color:var(--ink-faint); margin:6px 0 0; }
+
+  .alert { border-radius:var(--radius); padding:16px 18px; margin:22px 0 0; font-size:15.5px; line-height:1.6;
+           border:1px solid var(--line); border-left:3px solid var(--accent); background:var(--bg-sunk); }
+  .alert.warn { border-left-color:var(--warn); }
+  .alert.bad  { border-left-color:var(--bad); }
+  .alert.good { border-left-color:var(--good); }
+  .alert b { color:var(--ink); }
+
+  /* the schedule, as a spine with dated stops */
+  .tl { margin:30px 0 0; position:relative; padding-left:30px; }
+  .tl::before { content:''; position:absolute; left:7px; top:8px; bottom:8px; width:2px; background:var(--line); }
+  .step { position:relative; padding:0 0 26px; }
+  .step:last-child { padding-bottom:0; }
+  .step::before {
+    content:''; position:absolute; left:-30px; top:6px; width:16px; height:16px; border-radius:50%;
+    background:var(--bg); border:2px solid var(--line); box-sizing:border-box;
+  }
+  .step.hard::before { border-color:var(--bad); background:var(--bad); }
+  .step.done::before { border-color:var(--good); background:var(--good); }
+  .step.past::before { border-color:var(--warn); background:var(--warn); }
+
+  .step .when { font-family:ui-monospace,Menlo,monospace; font-size:12px; letter-spacing:.08em;
+                text-transform:uppercase; color:var(--ink-faint); }
+  .step .when b { color:var(--ink); font-weight:600; }
+  .step .when .flag { color:var(--bad); }
+  .step .what { font-size:17.5px; color:var(--ink); font-weight:600; margin:5px 0 3px; }
+  .step .why  { font-size:15px; color:var(--ink-dim); line-height:1.6; }
+  .step.past .what { color:var(--ink-faint); }
+
+  @media print {
+    .site-header, .site-footer, .date-row, .no-print { display:none !important; }
+    .tl::before { background:#999; }
+  }
+</style>
+</head>
+<body data-desk="rap-ledger">
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.4v8"/><path d="M18.1 6.1a8.6 8.6 0 1 1-12.2 0"/></svg>
+      <span class="platform">coolturkey</span>
+      <span class="desk">Rap Ledger</span>
+    </a>
+    <nav class="site-nav">
+      <a href="../index.html">Home</a>
+      <a href="../cold-takes/index.html">Cold Takes</a>
+      <a href="../rap-ledger.html" aria-current="page">Rap Ledger</a>
+      <a href="../receipts.html">Receipts</a>
+    </nav>
+  </div>
+</header>
+
+<main class="article">
+  <div class="wrap">
+
+    <p class="eyebrow">Free tool</p>
+    <h1>Release timeline builder</h1>
+    <p class="byline">
+      Runs entirely in your browser. Nothing is uploaded. Pitch deadline verified against
+      Spotify's own documentation, 7 August 2026.
+    </p>
+
+    <p class="standfirst">
+      Almost everything that goes wrong with a first release is a timing problem rather than a
+      music problem. Pick your drop date and this works backwards from it, with real dates and
+      the two deadlines you genuinely cannot move.
+    </p>
+
+    <div class="date-row no-print">
+      <div class="field">
+        <label for="drop">Release date</label>
+        <input type="date" id="drop">
+        <p class="hint">Fridays are the global release day. Pick one and the whole schedule follows.</p>
+      </div>
+      <div class="field">
+        <label for="kind">What you're putting out</label>
+        <select id="kind">
+          <option value="single" selected>A single</option>
+          <option value="ep">An EP or album</option>
+        </select>
+        <p class="hint">A project needs longer lead time for artwork and metadata.</p>
+      </div>
+    </div>
+
+    <div id="alerts"></div>
+    <div class="tl" id="timeline"></div>
+
+    <div class="btn-row no-print" style="margin-top:28px">
+      <button class="btn" id="printBtn" type="button">Print this schedule</button>
+    </div>
+
+    <h2>The two dates you cannot move</h2>
+
+    <p class="narrow">
+      Most of the schedule below is advice, and you can compress it if you have to. Two things
+      are not advice.
+    </p>
+
+    <p class="narrow">
+      <strong>The editorial pitch closes seven days before release.</strong> Spotify's own
+      documentation is explicit: "Deliver your music at least 7 days before release so our
+      editors have time to listen." Miss it and you cannot pitch at all. The same deadline
+      controls something people care about more, because "if you pitch an unreleased song at
+      least 7 days before release, we'll add it to your followers' Release Radar playlists."
+      Late delivery costs you the pitch and the Release Radar placement together.
+    </p>
+
+    <p class="narrow">
+      <strong>You can only pitch one unreleased song at a time.</strong> Also Spotify's wording:
+      "Once your pitched song goes live, you can pitch another." If you are dropping a project,
+      you are choosing one track to pitch, so decide which before you upload rather than after.
+    </p>
+
+    <div class="callout narrow">
+      <p>
+        <strong>Seven days is the floor, not the target.</strong> It is the hard cut-off in
+        Spotify's documentation. Widely repeated advice suggests pitching four to six weeks out
+        because editorial planning happens well in advance, and that is why this tool schedules
+        delivery at four weeks. Treat the four weeks as convention and the seven days as the
+        rule, because only one of those two is published by Spotify.
+      </p>
+    </div>
+
+    <h2>Why Friday</h2>
+
+    <p class="narrow">
+      Global Release Day is Friday, which is when the charting week starts and when the
+      new-music playlists refresh. Releasing on a Tuesday does not break anything, but it hands
+      away several days of the chart week and lands outside the rhythm the playlists run on.
+    </p>
+
+    <h2>Sources</h2>
+    <ul style="font-size:15px;color:var(--ink-dim)" class="narrow">
+      <li><a href="https://support.spotify.com/us/artists/article/pitching-music-to-playlist-editors/">Spotify for Artists: pitching music to playlist editors</a>, official. The 7-day minimum, the Release Radar consequence, and the one-song-at-a-time limit are all quoted directly from this page.</li>
+      <li>The four-week delivery target and the rest of the schedule are convention rather than published policy, drawn from the <a href="../articles/first-release-checklist.html">first-release checklist</a>. They are marked as guidance in the timeline above.</li>
+    </ul>
+
+    <p class="narrow" style="color:var(--ink-faint);font-size:15px">
+      Distributors set their own delivery lead times and they vary. Check yours before trusting
+      the four-week mark, and if you find something wrong here, tell
+      <a href="https://x.com/coolturkeyCT">@coolturkeyCT</a> and it gets corrected and dated.
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div><strong style="color:var(--ink)">coolturkey</strong><br>Music, on your own terms.</div>
+    <div>
+      <a href="../cold-takes/index.html">Cold Takes</a> ·
+      <a href="../rap-ledger.html">Rap Ledger</a> ·
+      <a href="../receipts.html">Receipts</a> ·
+      <a href="../how-it-works.html">How it works</a>
+    </div>
+    <div>Not legal or financial advice.</div>
+  </div>
+  <div class="footer-mark">coolturkey</div>
+</footer>
+
+<script src="../site.js?v=521945fb56" defer></script>
+<script>
+(function () {
+  'use strict';
+
+  /* Dates are handled at midday local time throughout. Constructing them at
+     midnight and then subtracting days is how you get off-by-one errors across
+     a daylight-saving boundary, which on a release schedule would be a real
+     bug rather than a cosmetic one. */
+  function noon(d) { var x = new Date(d); x.setHours(12, 0, 0, 0); return x; }
+  function addDays(d, n) { var x = noon(d); x.setDate(x.getDate() + n); return x; }
+  function fmt(d) {
+    return d.toLocaleDateString(undefined, { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+  }
+  function daysBetween(a, b) {
+    return Math.round((noon(b) - noon(a)) / 86400000);
+  }
+
+  /* offset = days BEFORE release. hard = a published deadline, not advice. */
+  var PLAN = [
+    { d:  0,  hard:false, single:true, ep:true,
+      t:'Sign the split sheet',
+      w:'On the day of the session, before anyone leaves. It costs nothing now and the same conversation two years later costs a friendship.',
+      rel:'session' },
+    { d: 56,  single:false, ep:true,  t:'Lock the tracklist and running order',
+      w:'Everything downstream — artwork, metadata, ISRCs — depends on knowing what is actually on the record.' },
+    { d: 45,  single:true, ep:true,  t:'Lock the artist name spelling',
+      w:'Exact capitalisation and spacing. "Lil Wave", "LilWave" and "Lil  Wave" are three different artists to a streaming platform, and this is painful to fix afterwards.' },
+    { d: 42,  single:true, ep:true,  t:'Register with a PRO if you have not',
+      w:'Registration takes time to clear, and you want it done before the song exists rather than after it starts earning.' },
+    { d: 35,  single:true, ep:true,  t:'Masters finished and exported',
+      w:'Final masters, correct format, no last-minute recalls. Loudness normalisation means a crushed master just sounds worse at the same volume.' },
+    { d: 33,  single:true, ep:true,  t:'Artwork finished to spec',
+      w:'3000×3000 minimum, no URLs, no social handles, no logos you do not own. Store rejections are usually artwork.' },
+    { d: 31,  single:true, ep:true,  t:'Write the metadata down before typing it in',
+      w:'Exact title including the "(feat. X)" convention, songwriter legal names, PRO affiliations, ISRCs. Decide once, use it everywhere forever.' },
+    { d: 28,  single:true, ep:true,  t:'Upload to your distributor',
+      w:'Four weeks out. This is convention rather than published policy, but it leaves room to survive a store rejection without moving the date.',
+      key:true },
+    { d: 28,  single:true, ep:true,  t:'Pitch to Spotify editorial',
+      w:'Do it at upload, while the song is still unreleased. Remember you can only pitch one unreleased song at a time.',
+      key:true },
+    { d:  7,  hard:true, single:true, ep:true,
+      t:'Absolute pitch deadline',
+      w:'Spotify: "Deliver your music at least 7 days before release so our editors have time to listen." Miss this and you lose both the pitch and the Release Radar placement.' },
+    { d: 14,  single:true, ep:true,  t:'Pre-save link and announcement',
+      w:'Two weeks of runway is enough to build something without exhausting it. Any longer and people forget.' },
+    { d:  1,  single:true, ep:true,  t:'Final check',
+      w:'Confirm the release is still scheduled, the artwork rendered, and the metadata reads correctly in your distributor dashboard.' },
+    { d:  0,  single:true, ep:true,  t:'Release day',
+      w:'Friday. Claim your artist profiles today if you have not already, because that is where you see who is actually listening.',
+      release:true },
+    { d: -3, single:true, ep:true,  t:'Register the song with your PRO',
+      w:'Within release week. Publishing registration is retroactive but the money sits in a pot until you claim it.' },
+    { d: -3, single:true, ep:true,  t:'Set the distributor renewal reminder',
+      w:'Thirty seconds, and it is the single most valuable thing on this list. A lapsed subscription takes your catalogue down.' },
+    { d: -7, single:true, ep:true,  t:'Read the numbers, not the vanity ones',
+      w:'Save rate, streams per listener, search share and playlist dependence. They tell you what to do differently next time.' }
+  ];
+
+  var dropEl = document.getElementById('drop');
+  var kindEl = document.getElementById('kind');
+
+  // default: the first Friday at least 6 weeks out, which is a sane starting point
+  (function seed() {
+    var d = addDays(new Date(), 42);
+    while (d.getDay() !== 5) d = addDays(d, 1);
+    dropEl.value = d.toISOString().slice(0, 10);
+  })();
+
+  function render() {
+    var raw = dropEl.value;
+    var alerts = document.getElementById('alerts');
+    var tl = document.getElementById('timeline');
+    if (!raw) { alerts.innerHTML = '<div class="alert">Pick a release date to build the schedule.</div>'; tl.innerHTML = ''; return; }
+
+    var drop = noon(new Date(raw + 'T12:00:00'));
+    var today = noon(new Date());
+    var lead = daysBetween(today, drop);
+    var kind = kindEl.value;
+
+    // ---- warnings, most severe first ----
+    var a = [];
+    if (lead < 0) {
+      a.push('<div class="alert bad"><b>That date has passed.</b> Pick a date in the future and the schedule will rebuild.</div>');
+    } else if (lead < 7) {
+      a.push('<div class="alert bad"><b>You cannot pitch this release.</b> It is ' + lead +
+             ' day' + (lead === 1 ? '' : 's') + ' away and Spotify requires the music at least 7 days before release. ' +
+             'You will also miss Release Radar. Moving the date by ' + (7 - lead) +
+             ' day' + (7 - lead === 1 ? '' : 's') + ' fixes both.</div>');
+    } else if (lead < 28) {
+      a.push('<div class="alert warn"><b>This is tight.</b> ' + lead + ' days out. You can still pitch, ' +
+             'but you are inside the four-week window most of the schedule assumes, and you have no room ' +
+             'to survive a store rejection without moving the date.</div>');
+    } else {
+      a.push('<div class="alert good"><b>You have room.</b> ' + lead + ' days out, which clears both the ' +
+             'seven-day pitch deadline and the four-week delivery convention.</div>');
+    }
+
+    if (drop.getDay() !== 5) {
+      var friday = addDays(drop, (5 - drop.getDay() + 7) % 7 || 7);
+      a.push('<div class="alert warn"><b>That is a ' +
+             drop.toLocaleDateString(undefined, { weekday:'long' }) +
+             '.</b> Global Release Day is Friday, which is when the chart week starts and the new-music ' +
+             'playlists refresh. The nearest Friday after it is ' + fmt(friday) + '.</div>');
+    }
+    alerts.innerHTML = a.join('');
+
+    // ---- the schedule ----
+    var steps = PLAN
+      .filter(function (s) { return kind === 'ep' ? s.ep : s.single; })
+      .slice()
+      .sort(function (x, y) { return y.d - x.d; });
+
+    tl.innerHTML = steps.map(function (s) {
+      var when, cls = '', flag = '';
+      if (s.rel === 'session') {
+        when = '<b>Whenever you record</b>';
+      } else {
+        var date = addDays(drop, -s.d);
+        var past = daysBetween(today, date) < 0;
+        if (past && !s.release) cls = 'past';
+        when = '<b>' + fmt(date) + '</b>';
+        if (s.d > 0)      when += ' · ' + s.d + ' days before';
+        else if (s.d < 0) when += ' · ' + (-s.d) + ' days after';
+        else              when += ' · release day';
+        if (past) flag = ' <span class="flag">· already passed</span>';
+      }
+      if (s.hard) cls += ' hard';
+      if (s.release) cls += ' done';
+      return '<div class="step ' + cls.trim() + '">' +
+        '<div class="when">' + when + flag + (s.hard ? ' <span class="flag">· hard deadline</span>' : '') + '</div>' +
+        '<div class="what">' + s.t + '</div>' +
+        '<div class="why">' + s.w + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  dropEl.addEventListener('input', render);
+  dropEl.addEventListener('change', render);
+  kindEl.addEventListener('change', render);
+  document.getElementById('printBtn').addEventListener('click', function () { window.print(); });
+  render();
+})();
+</script>
+
+</body>
+</html>

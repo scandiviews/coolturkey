@@ -91,7 +91,7 @@
     <p class="eyebrow">The index</p>
     <h1>Every claim, and whether it survived</h1>
     <p class="byline">
-      Updated whenever anything is published or corrected. Last change 3 August 2026.
+      Updated whenever anything is published or corrected. Last change 7 August 2026.
     </p>
 
     <p class="standfirst">
@@ -110,9 +110,13 @@
     <p class="count" id="count"></p>
     <div class="claims" id="claims"></div>
 
-    <h2>How a claim gets a verdict</h2>
-
-    <div class="stats">
+    </div>
+</main>
+<section class="invert">
+  <div class="wrap">
+    <p class="rule"><b>The standard</b></p>
+    <div class="section-head"><h2>How a claim gets a verdict</h2></div>
+    <div class="stats invert">
       <div class="stat">
         <div class="figure" style="color:var(--good)">Holds up</div>
         <div class="sub">Backed by a source I could actually read, cited with method and sample size where there is one. Strong enough to build an argument on.</div>
@@ -126,6 +130,11 @@
         <div class="sub">Believed going in, then checked, then dropped or corrected. This is the section that makes the other two worth anything.</div>
       </div>
     </div>
+  </div>
+</section>
+
+<main class="article" style="padding-top:56px">
+  <div class="wrap">
 
     <p class="narrow">
       Nothing gets published here without going through that sorting, and nothing gets quietly
@@ -261,6 +270,20 @@
       d:'It is $14.99, and the single is $9.99 rather than $9.95.',
       src:'CD Baby, official', url:'https://cdbaby.com/cd-baby-cost/',
       from:'What distribution actually costs', href:'articles/distributor-costs.html', date:'31 Jul 2026' },
+
+    // ---- Release timeline ----
+    { v:'holds', t:'Spotify requires music at least 7 days before release in order to pitch it.',
+      d:'Spotify’s wording: "Deliver your music at least 7 days before release so our editors have time to listen." The same deadline governs Release Radar: "If you pitch an unreleased song at least 7 days before release, we\u2019ll add it to your followers\u2019 Release Radar playlists."',
+      src:'Spotify for Artists, official', url:'https://support.spotify.com/us/artists/article/pitching-music-to-playlist-editors/',
+      from:'Release timeline builder', href:'tools/release-timeline.html', date:'7 Aug 2026' },
+    { v:'holds', t:'You can only pitch one unreleased song at a time.',
+      d:'Spotify: "You can only pitch one song at a time. Once your pitched song goes live, you can pitch another." Which means a project forces you to choose a lead track before upload.',
+      src:'Spotify for Artists, official', url:'https://support.spotify.com/us/artists/article/pitching-music-to-playlist-editors/',
+      from:'Release timeline builder', href:'tools/release-timeline.html', date:'7 Aug 2026' },
+    { v:'thin', t:'"Pitch four to six weeks ahead" is convention, not published policy.',
+      d:'Widely repeated and probably sensible, since editorial planning runs well in advance, but Spotify publishes only the 7-day minimum. The timeline schedules delivery at four weeks and labels it as guidance rather than a rule.',
+      src:'Secondary sources; not stated by Spotify', url:'',
+      from:'Release timeline builder', href:'tools/release-timeline.html', date:'7 Aug 2026' },
 
     // ---- Where your subscription goes ----
     { v:'holds', t:'Your streaming subscription does not follow what you listened to.',
