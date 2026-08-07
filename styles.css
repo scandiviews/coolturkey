@@ -1152,27 +1152,3 @@ a.lead.invert:hover { border-color: rgba(124,192,255,.5); }
 .rule::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: .28; }
 .rule b { color: var(--accent); font-weight: 600; }
 
-/* ---------- provenance note ----------
-   A compact, permanent statement of how a piece was made, sitting directly
-   under the byline. It belongs next to the opinions rather than only on a
-   colophon page, because the people who most need to see it are the ones who
-   will never click "how this is made". */
-
-.provenance {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  padding: 16px 18px;
-  margin: 0 0 34px;
-  border: 1px solid var(--line-soft);
-  border-left: 2px solid var(--accent);
-  border-radius: var(--radius);
-  background: var(--bg-sunk);
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: var(--ink-dim);
-  max-width: var(--measure);
-}
-.provenance svg { width: 17px; height: 17px; flex: none; margin-top: 2px; stroke: var(--accent); fill: none; stroke-width: 1.9; }
-.provenance b { color: var(--ink); font-weight: 600; }
-.provenance a { color: var(--accent); }
